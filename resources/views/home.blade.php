@@ -33,6 +33,7 @@
             @endif
         </nav>
         <div class="border border-slate-600 w-full rounded-lg p-5">
+            <div id="display"></div>
         </div>
     </main>
     <script src="{{ asset('js/app.js') }}"></script>

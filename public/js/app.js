@@ -23,7 +23,7 @@ async function tableClicked(e, key, parent_k) {
 
     const d = await fetch(`/data?db=${el.parentNode.parentNode.innerText}&table=${el.innerText}`, {method: 'get'})
     const res = await d.json()
-    renderTables(res)
+    renderTables(res.data)
 }
 
 function dbClicked(e, key) {
@@ -39,5 +39,71 @@ function dbClicked(e, key) {
 }
 
 function renderTables(data) {
+    console.log(data)
+    let displayer = document.getElementById('display')
+    if (data.length > 0) {
+
+        let table = document.createElement('table')
+        let table_h = document.createElement('thead')
+        let table_b = document.createElement('tbody')
+
+        let th_sel = document.createElement("th")
+        th_sel.innerText = "Select"
+
+        let th_edit = document.createElement("th")
+        th_edit.innerText = "Edit"
+        let th_delete = document.createElement("th")
+        th_delete.innerText = "Delete"
+
+        table_h.append(th_sel)
+        table_h.append(th_delete)
+        table_h.append(th_edit)
+
+
+        for (let i in data[0]) {
+            let th = document.createElement("th")
+            th.innerText = i
+            table_h.append(th)
+        }
+
+        for (let i = 0; i < data.length; i++) {
+            let tr = document.createElement("tr")
+
+
+            let td_sel = document.createElement("td")
+            let sel_input = document.createElement('input')
+            sel_input.type = 'checkbox'
+            td_sel.append(sel_input)
+
+            let td_edit = document.createElement("td")
+            let edit_btn = document.createElement('button')
+            edit_btn.innerText = 'Edit'
+            td_edit.append(edit_btn)
+
+            let td_delete = document.createElement("td")
+            let del_btn = document.createElement('button')
+            del_btn.innerText = 'Delete'
+            td_delete.append(del_btn)
+
+            tr.append(td_sel)
+            tr.append(td_delete)
+            tr.append(td_edit)
+
+            for (let b in data[i]) {
+                let td = document.createElement("td")
+                td.innerText = data[i][b]
+                tr.append(td)
+            }
+            table_b.append(tr)
+        }
+
+        table.append(table_h)
+        table.append(table_b)
+        displayer.innerHTML = ''
+        displayer.append(table)
+
+    } else {
+        displayer.innerHTML = "<p>No data</p>"
+    }
 
 }

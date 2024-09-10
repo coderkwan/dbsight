@@ -31,6 +31,14 @@ Route::get('/data', function (Request $request) {
 });
 
 
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+Route::post('/delete/row', function (Request $req) {
+    $data = $req->input();
+    DB::select("DELETE FROM " . $data['db'] . "." . $data['table'] . " WHERE id=" . $data['id']);
+    return response()->json('done');
+});
+
+Route::post('/create/row', function (Request $req) {
+    $data = $req->input();
+    /* $res = DB::select("INSERT INTO " . $data['db'] . "." . $data['table'] . " WHERE id=" . $data['id']); */
+    return response()->json($data);
+});

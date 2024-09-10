@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @csrf
 
     <title>Laravel</title>
 
@@ -22,11 +23,16 @@
                         {{ $item['database'] }}
                     </p>
                     <div id="tables_{{ $key }}" class="ms-5 hidden">
+                        <button class="text-xs mb-2">New Table</button>
                         @foreach ($item['tables'] as $t_key => $table)
-                            <p id="table_{{ $key . '_' . $t_key }}"
-                                onclick="tableClicked(event,{{ $t_key }}, {{ $key }})"
-                                class="text-sm cursor-pointer border border-slate-400 py-1 px-4 rounded mb-1 hover:border-red-300 hover:bg-orange-100">
-                                {{ $table->{'Tables_in_' . $item['database'] . ''} }}</p>
+                            <div id="{{ $item['database'] }}" class="flex gap-2 items-center justify-between">
+                                <p id="table_{{ $key . '_' . $t_key }}"
+                                    onclick="tableClicked(event,{{ $t_key }}, {{ $key }})"
+                                    class="w-full text-sm cursor-pointer border border-slate-400 py-1 px-4 rounded mb-1 hover:border-red-300 hover:bg-orange-100">
+                                    {{ $table->{'Tables_in_' . $item['database'] . ''} }}</p>
+                                <span class="bg-fuchsia-300 py-2 px-5 cursor-pointer rounded text-xs">Edit</span>
+                                <span class="bg-rose-400 py-2 px-5 cursor-pointer rounded text-xs">Detele</span>
+                            </div>
                         @endforeach
                     </div>
                 @endforeach

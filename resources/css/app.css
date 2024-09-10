@@ -14,6 +14,8 @@ table,
 th,
 td {
     border: 1px solid #ddd;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 th,
@@ -34,4 +36,34 @@ tr:nth-child(even) {
 
 tr:hover {
     background-color: #f1f1f1;
+}
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 800px;
+    padding: 20px;
+    box-shadow: 2px 2px 32px 3px gray;
+    border-radius: 12px;
+}
+
+.form_element {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+input,
+button {
+    border: 1px solid dodgerblue;
+    padding: 5px 15px;
+    border-radius: 6px;
+}
+
+button {
+    border: none;
+    background-color: gray;
+    color: white;
 }

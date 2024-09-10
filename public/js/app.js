@@ -9,7 +9,6 @@ async function tableClicked(e, key, parent_k) {
     } else {
         let prev = document.getElementById(prev_table)
         if (prev) {
-            console.log(prev.innerText)
             prev.style.color = ''
             prev.style.borderColor = ''
             prev.classList.remove('active')
@@ -23,7 +22,7 @@ async function tableClicked(e, key, parent_k) {
 
     const d = await fetch(`/data?db=${el.parentNode.parentNode.innerText}&table=${el.innerText}`, {method: 'get'})
     const res = await d.json()
-    renderTables(res.data)
+    renderTables(res.data, el.parentNode.id, el.innerText)
 }
 
 function dbClicked(e, key) {
@@ -38,8 +37,7 @@ function dbClicked(e, key) {
     }
 }
 
-function renderTables(data) {
-    console.log(data)
+function renderTables(data, db, tb) {
     let displayer = document.getElementById('display')
     if (data.length > 0) {
 
@@ -47,15 +45,11 @@ function renderTables(data) {
         let table_h = document.createElement('thead')
         let table_b = document.createElement('tbody')
 
-        let th_sel = document.createElement("th")
-        th_sel.innerText = "Select"
-
         let th_edit = document.createElement("th")
         th_edit.innerText = "Edit"
         let th_delete = document.createElement("th")
         th_delete.innerText = "Delete"
 
-        table_h.append(th_sel)
         table_h.append(th_delete)
         table_h.append(th_edit)
 
@@ -69,12 +63,6 @@ function renderTables(data) {
         for (let i = 0; i < data.length; i++) {
             let tr = document.createElement("tr")
 
-
-            let td_sel = document.createElement("td")
-            let sel_input = document.createElement('input')
-            sel_input.type = 'checkbox'
-            td_sel.append(sel_input)
-
             let td_edit = document.createElement("td")
             let edit_btn = document.createElement('button')
             edit_btn.innerText = 'Edit'
@@ -83,9 +71,24 @@ function renderTables(data) {
             let td_delete = document.createElement("td")
             let del_btn = document.createElement('button')
             del_btn.innerText = 'Delete'
+
+            let da = new FormData()
+            da.append('table', tb)
+            da.append('db', db)
+            da.append('id', data[i]['id'])
+
+            del_btn.addEventListener('click', async (e) => {
+                await fetch('/delete/row', {
+                    method: "POST", body: da,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').getAttribute('value')
+                    },
+                })
+                tr.remove()
+            })
+
             td_delete.append(del_btn)
 
-            tr.append(td_sel)
             tr.append(td_delete)
             tr.append(td_edit)
 
@@ -101,9 +104,48 @@ function renderTables(data) {
         table.append(table_b)
         displayer.innerHTML = ''
         displayer.append(table)
+        displayer.append(renderForm(data[0], db, tb))
 
     } else {
         displayer.innerHTML = "<p>No data</p>"
     }
 
 }
+
+function renderForm(data, db, tb) {
+    let form = document.createElement('form')
+    for (let i in data) {
+        let d = document.createElement("div")
+        d.classList.add('form_element')
+        let label = document.createElement("label")
+        label.innerText = i
+        let input = document.createElement("input")
+        input.type = 'text'
+        input.name = i
+        d.append(label)
+        d.append(input)
+        form.append(d)
+    }
+
+    let button = document.createElement('button')
+    button.type = 'submit'
+    button.innerText = 'Create'
+    form.append(button)
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        let da = new FormData(form)
+        da.append('x_table_', tb)
+        da.append('x_db_', db)
+
+        await fetch('/create/row', {
+            method: "POST", body: da,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').getAttribute('value')
+            },
+        })
+        console.log('go')
+    })
+    return form
+}
+

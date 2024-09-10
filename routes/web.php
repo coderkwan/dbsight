@@ -39,6 +39,19 @@ Route::post('/delete/row', function (Request $req) {
 
 Route::post('/create/row', function (Request $req) {
     $data = $req->input();
-    /* $res = DB::select("INSERT INTO " . $data['db'] . "." . $data['table'] . " WHERE id=" . $data['id']); */
-    return response()->json($data);
+    $k = "";
+    $v = "";
+
+    foreach ($data as $key => $value) {
+        if (substr($key, 0, 2) != "x_") {
+            $k = $k . ", " . "`" . $key . "`";
+            $v = $v . "," .  "'" . $value . "'";
+        }
+    }
+
+    $k = substr($k, 1);
+    $v = substr($v, 1);
+
+    DB::select("INSERT INTO " . $data['x_db_'] . "." . $data['x_table_'] . " ( $k ) VALUES ( $v )");
+    return response()->json("done");
 });

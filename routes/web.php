@@ -69,3 +69,24 @@ Route::post('/create/database', function (Request $req) {
         return back()->withErrors("Can't create databse, choose a different name!")->withInput();
     }
 });
+
+Route::post('/create/table', function (Request $req) {
+    $data = $req->input();
+    $text = '';
+    $col_len = count($data['column']);
+
+    foreach ($data['column'] as $key => $value) {
+        $text = $text . $value . " " . $data['type'][$key];
+        if ($key != $col_len - 1) {
+            $text = $text . ", ";
+        }
+    }
+
+
+    try {
+        DB::select("CREATE TABLE " . $data['db'] . "." . $data['name'] . " (" . $text . ")");
+        return redirect('/');
+    } catch (\Throwable $th) {
+        return back()->withErrors("Can't create table, choose a different name!")->withInput();
+    }
+});

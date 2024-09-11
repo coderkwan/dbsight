@@ -40,12 +40,35 @@ function dbClicked(e, key) {
 function innerDBClicked(e, data) {
     let displayer = document.getElementById('display')
     displayer.innerHTML = ''
+    let mydb = e.target.innerText.trim()
 
     if (data.length > 0) {
+        let divs = document.createElement('div')
+        divs.classList.add('flex', 'justify-between', 'items-center')
+
         let header = document.createElement('h2')
         header.classList.add('text-2xl', 'font-bold')
-        header.innerText = "Tables of the " + e.target.innerText.trim() + " Database;"
-        displayer.append(header)
+        header.innerText = "Tables of the " + mydb + " Database;"
+        divs.append(header)
+
+        let create_t_btn = document.createElement('button')
+        create_t_btn.innerText = 'Create New Table'
+        create_t_btn.type = 'button'
+        create_t_btn.addEventListener('click', e => {
+            document.getElementById('create_table_modal').style.display = 'flex'
+            document.getElementById('create_table_db').value = mydb
+        })
+        divs.append(create_t_btn)
+
+        let delete_db_btn = document.createElement('button')
+        delete_db_btn.innerText = 'Delete Database'
+        delete_db_btn.type = 'button'
+        delete_db_btn.classList.add('bg-red-500')
+        delete_db_btn.addEventListener('click', e => {
+        })
+
+        divs.append(delete_db_btn)
+        displayer.append(divs)
 
         let table = document.createElement('table')
         let table_h = document.createElement('thead')
@@ -237,3 +260,42 @@ function renderForm(data, db, tb) {
     return form
 }
 
+let add_column_btn = document.getElementById('add_column_btn')
+let _column = document.getElementById('each_column')
+let columns = document.getElementById('all_columns')
+let columns_list = []
+
+add_column_btn.addEventListener('click', (e) => {
+    let id = Math.random() * 10
+    let copy = _column.cloneNode(true)
+    copy.id = id
+
+    let deleter = document.createElement('button')
+    deleter.innerHTML = 'delete'
+    deleter.type = 'button'
+    deleter.classList.add('bg-red-300', 'border', 'rounded', 'pointer')
+
+    deleter.addEventListener('click', (e) => {
+        copy.remove()
+    })
+
+    copy.append(deleter)
+    columns.append(copy)
+
+    let ele = document.getElementById(id).getElementsByTagName('input')
+    console.log(ele)
+    console.log(ele.length)
+    console.log(ele[0])
+
+    for (let i = 0; ele.length > i; i++) {
+        ele[i].value = ''
+    }
+})
+
+
+
+let close_table_modal = document.getElementById('close_table_modal')
+
+close_table_modal.addEventListener('click', (e) => {
+    e.target.parentNode.parentNode.style.display = 'none'
+})

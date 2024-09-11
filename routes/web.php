@@ -82,11 +82,30 @@ Route::post('/create/table', function (Request $req) {
         }
     }
 
-
     try {
         DB::select("CREATE TABLE " . $data['db'] . "." . $data['name'] . " (" . $text . ")");
         return redirect('/');
     } catch (\Throwable $th) {
         return back()->withErrors("Can't create table, choose a different name!")->withInput();
+    }
+});
+
+Route::post('/delete/table', function (Request $req) {
+    $data = $req->input();
+    try {
+        DB::select("DROP TABLE " . $data['database'] . "." . $data['table']);
+        return response()->json();
+    } catch (\Throwable $th) {
+        return response()->json('failed to delete the table!');
+    }
+});
+
+Route::post('/delete/database', function (Request $req) {
+    $data = $req->input();
+    try {
+        DB::select("DROP DATABASE " . $data['database']);
+        return response()->json("Database deleted!");
+    } catch (\Throwable $th) {
+        return response()->json("failed to delete db!");
     }
 });

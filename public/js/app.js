@@ -1,5 +1,6 @@
 
 let prev_table = '';
+let token = document.querySelector('input[name="_token"]').getAttribute('value')
 
 async function tableClicked(e, key, parent_k) {
     let el = e.target
@@ -42,34 +43,44 @@ function innerDBClicked(e, data) {
     displayer.innerHTML = ''
     let mydb = e.target.innerText.trim()
 
+    let divs = document.createElement('div')
+    divs.classList.add('flex', 'justify-between', 'items-center')
+
+    let header = document.createElement('h2')
+    header.classList.add('text-2xl', 'font-bold')
+    header.innerText = "Tables of the " + mydb + " Database;"
+    divs.append(header)
+
+    let create_t_btn = document.createElement('button')
+    create_t_btn.innerText = 'Create New Table'
+    create_t_btn.type = 'button'
+    create_t_btn.addEventListener('click', e => {
+        document.getElementById('create_table_modal').style.display = 'flex'
+        document.getElementById('create_table_db').value = mydb
+    })
+    divs.append(create_t_btn)
+
+    let delete_db_btn = document.createElement('button')
+    delete_db_btn.innerText = 'Delete Database'
+    delete_db_btn.type = 'button'
+    delete_db_btn.classList.add('bg-red-500')
+
+    delete_db_btn.addEventListener('click', async e => {
+        let d = new FormData()
+        d.append('database', mydb)
+
+        let r = await fetch('/delete/database', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: d})
+        let f = await r.json();
+        if (r.status == 200) {
+            window.location.href = "/"
+        }
+        console.log(f)
+    })
+
+    divs.append(delete_db_btn)
+    displayer.append(divs)
+
     if (data.length > 0) {
-        let divs = document.createElement('div')
-        divs.classList.add('flex', 'justify-between', 'items-center')
-
-        let header = document.createElement('h2')
-        header.classList.add('text-2xl', 'font-bold')
-        header.innerText = "Tables of the " + mydb + " Database;"
-        divs.append(header)
-
-        let create_t_btn = document.createElement('button')
-        create_t_btn.innerText = 'Create New Table'
-        create_t_btn.type = 'button'
-        create_t_btn.addEventListener('click', e => {
-            document.getElementById('create_table_modal').style.display = 'flex'
-            document.getElementById('create_table_db').value = mydb
-        })
-        divs.append(create_t_btn)
-
-        let delete_db_btn = document.createElement('button')
-        delete_db_btn.innerText = 'Delete Database'
-        delete_db_btn.type = 'button'
-        delete_db_btn.classList.add('bg-red-500')
-        delete_db_btn.addEventListener('click', e => {
-        })
-
-        divs.append(delete_db_btn)
-        displayer.append(divs)
-
         let table = document.createElement('table')
         let table_h = document.createElement('thead')
         let table_b = document.createElement('tbody')
@@ -107,23 +118,23 @@ function innerDBClicked(e, data) {
             })
 
 
-            // let da = new FormData()
-            // da.append('table', tb)
-            // da.append('db', db)
-            // da.append('id', data[i]['id'])
+            let da = new FormData()
+            da.append('table', Object.values(data[i])[0])
+            da.append('database', mydb)
 
-            // del_btn.addEventListener('click', async (e) => {
-            //     await fetch('/delete/table', {
-            //         method: "POST", body: da,
-            //         headers: {
-            //             'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').getAttribute('value')
-            //         },
-            //     })
-            //     tr.remove()
-            // })
+            del_btn.addEventListener('click', async (e) => {
+                let dt = await fetch('/delete/table', {
+                    method: "POST", body: da,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    },
+                })
+                if (dt.status == 200) {
+                    tr.remove()
+                }
+            })
 
             td_delete.append(del_btn)
-
 
             for (let b in data[i]) {
                 let td = document.createElement("td")
@@ -143,8 +154,11 @@ function innerDBClicked(e, data) {
         displayer.append(table)
 
     } else {
-
-        displayer.innerHTML = `<p>The Database ${e.target.innerText} Has No Tables</p>`
+        let errp = document.createElement('p')
+        let strr = "The Database " + e.target.innerText.trim() + " Has No Tables"
+        errp.innerText = strr
+        errp.classList.add('text-xl', 'my-4', 'text-orange-500')
+        displayer.append(errp)
     }
 
 }
@@ -252,7 +266,7 @@ function renderForm(data, db, tb) {
         await fetch('/create/row', {
             method: "POST", body: da,
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').getAttribute('value')
+                'X-CSRF-TOKEN': token
             },
         })
         console.log('go')

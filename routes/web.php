@@ -24,7 +24,7 @@ Route::get('/', function () {
 Route::get('/data', function (Request $request) {
     $params = $request->query();
 
-    $d = DB::select('SELECT * FROM ' . $params['table']);
+    $d = DB::select('SELECT * FROM ' . $params['db'] . '.' . $params['table']);
     $data = ['data' => $d];
 
     return response()->json($data);

@@ -20,7 +20,7 @@ async function tableClicked(e, key, parent_k) {
         prev_table = 'table_' + parent_k + '_' + key
     }
 
-    const d = await fetch(`/data?db=${el.parentNode.parentNode.innerText}&table=${el.innerText}`, {method: 'get'})
+    const d = await fetch(`/data?db=${el.parentNode.id}&table=${el.innerText}`, {method: 'get'})
     const res = await d.json()
     renderTables(res.data, el.parentNode.id, el.innerText)
 }

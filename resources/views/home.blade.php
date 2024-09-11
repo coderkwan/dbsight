@@ -24,6 +24,7 @@
                     </p>
                     <div id="tables_{{ $key }}" class="ms-5 hidden">
                         <button class="text-xs mb-2">New Table</button>
+                        <button class="text-xs mb-2 bg-rose-300">Delete Database</button>
                         @foreach ($item['tables'] as $t_key => $table)
                             <div id="{{ $item['database'] }}" class="flex gap-2 items-center justify-between">
                                 <p id="table_{{ $key . '_' . $t_key }}"
@@ -73,6 +74,61 @@
                     </form>
                 </div>
             </div>
+            <div>
+                <form action="/create/table" method="post">
+                    @csrf
+                    <input type="text" name="name" value="{{ old('name') }}" placeholder="table name">
+                    <h3 class="text-xl">Columns</h3>
+                    <div class="flex gap-4 items-center">
+                        <div class="flex flex-col">
+                            <label for="">Name</label>
+                            <input type="text" name="col" value="{{ old('id') }}" placeholder="Column name">
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="">Type</label>
+                            <select name="type">
+                                <option value="INT">INT</option>
+                                <option value="VARCHAR">VARCHAR</option>
+                                <option value="TEXT">TEXT</option>
+                                <option value="DATE">DATE</option>
+                                <option value="DATETIME">DATETIME</option>
+                                <option value="TIMESTAMP">TIMESTAMP</option>
+                                <option value="TIME">TIME</option>
+                                <option value="YEAR">YEAR</option>
+                                <option value="DECIMAL">DECIMAL</option>
+                                <option value="FLOAT">FLOAT</option>
+                                <option value="DOUBLE">DOUBLE</option>
+                                <option value="BOOLEAN">BOOLEAN</option>
+                                <option value="CHAR">CHAR</option>
+                                <option value="BLOB">BLOB</option>
+                                <option value="ENUM">ENUM</option>
+                                <option value="SET">SET</option>
+                                <option value="JSON">JSON</option>
+                                <option value="BIGINT">BIGINT</option>
+                                <option value="TINYINT">TINYINT</option>
+                                <option value="SMALLINT">SMALLINT</option>
+                                <option value="MEDIUMINT">MEDIUMINT</option>
+                                <option value="BIT">BIT</option>
+                                <option value="BINARY">BINARY</option>
+                                <option value="VARBINARY">VARBINARY</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col">
+                            <label>Allow NUll</label>
+                            <input name="NULL" type="checkbox" />
+                        </div>
+                        <div class="flex flex-col">
+                            <label>Default Value</label>
+                            <input name="default" type="text" />
+                        </div>
+                    </div>
+                    <button type="submit">Create Table</button>
+                    @foreach ($errors->all() as $error)
+                        <p class="text-rose-500 font-xs">{{ $error }}</p>
+                    @endforeach
+                </form>
+            </div>
+        </div>
         </div>
     </main>
     <script src="{{ asset('js/app.js') }}"></script>

@@ -39,11 +39,24 @@
             @endif
         </nav>
         <div class="border border-slate-600 w-full rounded-lg p-5">
+            <nav class="bg-slate-200 p-2 rounded flex gap-5 items-center justify-between mb-5">
+                <div class="flex gap-5 items-center">
+                    <a href="/" class="bg-indigo-300 px-4 py-1 rounded">Databases</a>
+                    <a href="/" class="bg-indigo-300 px-4 py-1 rounded">SQL</a>
+                    <a href="/" class="bg-indigo-300 px-4 py-1 rounded">Import</a>
+                    <a href="/" class="bg-indigo-300 px-4 py-1 rounded">Export</a>
+                </div>
+
+                <div class="flex gap-5 items-center">
+                    <a href="/" class="bg-pink-300 px-4 py-1 rounded">Logout</a>
+                </div>
+            </nav>
             <div id="display">
                 <h2 class="text-4xl mb-3 font-bold">Databases</h2>
                 <div class="flex flex-wrap gap-3 ">
                     @foreach ($database_data as $key => $item)
-                        <div id="db_{{ $key }}" onclick="innerdbClicked(event, {{ $key }})"
+                        <div id="db_{{ $key }}" data-tables="{{ json_encode($item['tables']) }}"
+                            onclick="innerDBClicked(event, {{ json_encode($item['tables']) }} )"
                             class="flex items-center cursor-pointer font-bold text-xl border border-slate-400 py-2 px-4 rounded mb-3 hover:border-red-300 hover:bg-orange-200 ">
                             {{ $item['database'] }}
                         </div>

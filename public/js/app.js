@@ -54,10 +54,25 @@ function innerDBClicked(e, data) {
     let create_t_btn = document.createElement('button')
     create_t_btn.innerText = 'Create New Table'
     create_t_btn.type = 'button'
+
     create_t_btn.addEventListener('click', e => {
         document.getElementById('create_table_modal').style.display = 'flex'
         document.getElementById('create_table_db').value = mydb
+
+        document.getElementById('create_table_modal').addEventListener('submit', async e => {
+            e.preventDefault()
+            let dd = new FormData(e.target)
+            let r = await fetch('/create/table', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: dd})
+            if (r.status == 200) {
+                document.getElementById('create_table_modal').style.display = 'none'
+                document.getElementById('create_table_error').style.display = 'none'
+                // call create table row
+            } else {
+                document.getElementById('create_table_error').style.display = 'flex'
+            }
+        })
     })
+
     divs.append(create_t_btn)
 
     let delete_db_btn = document.createElement('button')
@@ -80,80 +95,79 @@ function innerDBClicked(e, data) {
     divs.append(delete_db_btn)
     displayer.append(divs)
 
-    if (data.length > 0) {
-        let table = document.createElement('table')
-        let table_h = document.createElement('thead')
-        let table_b = document.createElement('tbody')
+    let table = document.createElement('table')
+    let table_h = document.createElement('thead')
+    let table_b = document.createElement('tbody')
 
-        let th_edit = document.createElement("th")
-        th_edit.innerText = "Edit"
-        let th_delete = document.createElement("th")
-        th_delete.innerText = "Delete"
+    let th_edit = document.createElement("th")
+    th_edit.innerText = "Edit"
+    let th_delete = document.createElement("th")
+    th_delete.innerText = "Delete"
 
-        let th = document.createElement("th")
-        th.innerText = "Tables"
-        table_h.append(th)
+    let th = document.createElement("th")
+    th.innerText = "Tables"
+    table_h.append(th)
 
-        for (let i = 0; i < data.length; i++) {
-            let tr = document.createElement("tr")
+    for (let i = 0; i < data.length; i++) {
+        let tr = document.createElement("tr")
 
-            let td_view = document.createElement("td")
-            let view_btn = document.createElement('button')
-            view_btn.innerText = 'View'
-            td_view.append(view_btn)
+        let td_view = document.createElement("td")
+        let view_btn = document.createElement('button')
+        view_btn.innerText = 'View'
+        td_view.append(view_btn)
 
-            let td_edit = document.createElement("td")
-            let edit_btn = document.createElement('button')
-            edit_btn.innerText = 'Edit'
-            td_edit.append(edit_btn)
+        let td_edit = document.createElement("td")
+        let edit_btn = document.createElement('button')
+        edit_btn.innerText = 'Edit'
+        td_edit.append(edit_btn)
 
-            let td_delete = document.createElement("td")
-            let del_btn = document.createElement('button')
-            del_btn.innerText = 'Delete'
+        let td_delete = document.createElement("td")
+        let del_btn = document.createElement('button')
+        del_btn.innerText = 'Delete'
 
-            view_btn.addEventListener('click', async () => {
-                const d = await fetch(`/data?db=${e.target.innerText.trim()}&table=${Object.values(data[i])[0]}`, {method: 'get'})
-                const res = await d.json()
-                renderTables(res.data, e.target.innerText.trim(), Object.values(data[i])[0])
+        view_btn.addEventListener('click', async () => {
+            const d = await fetch(`/data?db=${e.target.innerText.trim()}&table=${Object.values(data[i])[0]}`, {method: 'get'})
+            const res = await d.json()
+            renderTables(res.data, e.target.innerText.trim(), Object.values(data[i])[0])
+        })
+
+
+        let da = new FormData()
+        da.append('table', Object.values(data[i])[0])
+        da.append('database', mydb)
+
+        del_btn.addEventListener('click', async (e) => {
+            let dt = await fetch('/delete/table', {
+                method: "POST", body: da,
+                headers: {
+                    'X-CSRF-TOKEN': token
+                },
             })
-
-
-            let da = new FormData()
-            da.append('table', Object.values(data[i])[0])
-            da.append('database', mydb)
-
-            del_btn.addEventListener('click', async (e) => {
-                let dt = await fetch('/delete/table', {
-                    method: "POST", body: da,
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    },
-                })
-                if (dt.status == 200) {
-                    tr.remove()
-                }
-            })
-
-            td_delete.append(del_btn)
-
-            for (let b in data[i]) {
-                let td = document.createElement("td")
-                td.innerText = data[i][b]
-                tr.append(td)
+            if (dt.status == 200) {
+                tr.remove()
             }
+        })
 
-            tr.append(td_view)
-            tr.append(td_edit)
-            tr.append(td_delete)
+        td_delete.append(del_btn)
 
-            table_b.append(tr)
+        for (let b in data[i]) {
+            let td = document.createElement("td")
+            td.innerText = data[i][b]
+            tr.append(td)
         }
 
-        table.append(table_h)
-        table.append(table_b)
-        displayer.append(table)
+        tr.append(td_view)
+        tr.append(td_edit)
+        tr.append(td_delete)
 
-    } else {
+        table_b.append(tr)
+    }
+
+    table.append(table_h)
+    table.append(table_b)
+    displayer.append(table)
+
+    if (data.length == 0) {
         let errp = document.createElement('p')
         let strr = "The Database " + e.target.innerText.trim() + " Has No Tables"
         errp.innerText = strr
@@ -206,7 +220,7 @@ function renderTables(data, db, tb) {
                 await fetch('/delete/row', {
                     method: "POST", body: da,
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').getAttribute('value')
+                        'X-CSRF-TOKEN': token
                     },
                 })
                 tr.remove()
@@ -307,9 +321,11 @@ add_column_btn.addEventListener('click', (e) => {
 })
 
 
-
 let close_table_modal = document.getElementById('close_table_modal')
 
 close_table_modal.addEventListener('click', (e) => {
     e.target.parentNode.parentNode.style.display = 'none'
+    document.getElementById('create_table_error').style.display = 'none'
+    document.getElementById('create_table_db').removeEventListener('submit', () => {return })
+
 })

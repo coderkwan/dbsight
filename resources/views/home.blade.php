@@ -75,14 +75,15 @@
                 </div>
             </div>
             <div class="">
-                <form action="/create/table" method="post" id="create_table_modal"
+                <form id="create_table_modal"
                     class="absolute top-5 mx-auto left-0 right-0 border-indigo-800 shadow-xl border-2 flex justify-center hidden">
-                    @csrf
                     <div class="flex items-center justify-between">
                         <h3 class="text-2xl font-bold">Create New Table</h3>
                         <button type="button" id="close_table_modal"
                             class="bg-red-500 w-fit rounded-full pointer">X</button>
                     </div>
+                    <p id="create_table_error" class="text-red-500 hidden"> Cannot create table, Please make sure
+                        you use a unique name and you columns must contain an 'id' column.</p>
                     <input type="text" name="db" id="create_table_db" required value="{{ old('db') }}"
                         placeholder="table db" hidden>
                     <input type="text" name="name" required value="{{ old('name') }}" placeholder="table name">

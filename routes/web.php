@@ -84,9 +84,9 @@ Route::post('/create/table', function (Request $req) {
 
     try {
         DB::select("CREATE TABLE " . $data['db'] . "." . $data['name'] . " (" . $text . ")");
-        return redirect('/');
+        return response()->json('done baby');
     } catch (\Throwable $th) {
-        return back()->withErrors("Can't create table, choose a different name!")->withInput();
+        return response()->json('Failed create the table, make sure the name is unique and your columns include an id column', 400);
     }
 });
 

@@ -19,7 +19,7 @@ Route::get('/', function () {
     }
 
     return view('home', compact('database_data'));
-});
+})->name('home');
 
 Route::get('/data', function (Request $request) {
     $params = $request->query();
@@ -54,4 +54,18 @@ Route::post('/create/row', function (Request $req) {
 
     DB::select("INSERT INTO " . $data['x_db_'] . "." . $data['x_table_'] . " ( $k ) VALUES ( $v )");
     return response()->json("done");
+});
+
+
+
+Route::post('/create/database', function (Request $req) {
+    $data = $req->input();
+    $name = str_replace(" ", "_", $data['name']);
+
+    try {
+        DB::select("CREATE DATABASE  " . $name);
+        return redirect('/');
+    } catch (\Throwable $th) {
+        return back()->withErrors("Can't create databse, choose a different name!")->withInput();
+    }
 });

@@ -18,22 +18,15 @@ class SetDynamicDbConnection
         if (isset($cooks['db_connection_details'])) {
             $dbDetails = json_decode($cooks['db_connection_details']);
 
-            // Set the dynamic connection only if it hasn't been set yet
-            if (!Config::has('database.connections.dynamic_db')) {
-                Config::set('database.connections.dynamic_db', [
-                    'driver' => 'mysql',
-                    'host' => $dbDetails->host,
-                    'database' => null,
-                    'username' => $dbDetails->username,
-                    'password' => $dbDetails->password,
-                    'charset' => 'utf8mb4',
-                    'collation' => 'utf8mb4_unicode_ci',
-                    'prefix' => '',
-                    'strict' => true,
-                    'engine' => null,
-                ]);
-                DB::purge('dynamic_db'); // Clear the previous connection if exists
-            }
+            Config::set('database.connections.dynamic_db', [
+                'driver' => $dbDetails->driver,
+                'host' => $dbDetails->host,
+                'database' => $dbDetails->database,
+                'username' => $dbDetails->username,
+                'password' => $dbDetails->password,
+            ]);
+            DB::purge('dynamic_db'); // Clear the previous connection if exists
+            DB::connection('dynamic_db')->reconnect();
             return $next($request);
         } else {
             return redirect('/login');

@@ -13,14 +13,23 @@
 
 </head>
 <body class="flex justify-center p-5">
-    <form action="/login" method="post" class="flex flex-col gap-3 w-full max-w-[900px]">
+    <form action="/login" method="post" class="p-5 bg-gray-100 flex flex-col w-full max-w-[500px]">
         @csrf
+        <label for="">Driver</label>
+        <input type="text" name="driver" placeholder="mysql" required value="{{ old('driver') }}"
+            class="border px-3 py-1">
         <label for="">Host</label>
-        <input type="text" name="host" placeholder="localhost" required value="{{ old('host') }}">
+        <input type="text" name="host" placeholder="localhost" required value="{{ old('host') }}"
+            class="border px-3 py-1">
+        <label for="">Database</label>
+        <input type="text" name="database" placeholder="maindb" required value="{{ old('database') }}"
+            class="border px-3 py-1">
         <label for="">Username</label>
-        <input type="text" name="user" placeholder="admin" required value="{{ old('username') }}">
+        <input type="text" name="user" placeholder="admin" required value="{{ old('username') }}"
+            class="border px-3 py-1">
         <label for="">Password</label>
-        <input type="password" name="password" placeholder="1234" required value="{{ old('password') }}">
+        <input type="password" name="password" placeholder="1234" required value="{{ old('password') }}"
+            class="border px-3 py-1">
         <button type="submit">Login</button>
     </form>
 </body>

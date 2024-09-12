@@ -12,11 +12,11 @@ function sidebarDropDownClicked(e, key, name) {
     let el = e.target
     if (el.classList.contains('active')) {
         el.classList.remove('text-green', 'active')
-        el.style.transform = 'rotate(360deg)'
+        el.innerText = "+"
         document.getElementById(`tables_${key}`).classList.add('hidden')
     } else {
         el.classList.add('text-green', 'active')
-        el.style.transform = 'rotate(90deg)'
+        el.innerText = "-"
         document.getElementById(`tables_${key}`).classList.remove('hidden')
         fetchForSideBar(key, name)
     }
@@ -32,7 +32,7 @@ async function fetchForSideBar(id, name) {
     for (let i = 0; i < data.length; i++) {
         let d = document.createElement('div')
         d.id = id + "_" + i
-        d.classList.add('p-2', 'border', 'rounded', 'cursor-pointer')
+        d.classList.add('py-1', 'p-2', 'border', '', 'cursor-pointer')
         let tab = data[i][`Tables_in_${name}`]
         d.innerText = tab
         d.addEventListener('click', () => tableClicked(name, tab))
@@ -48,23 +48,25 @@ async function innerDBClicked(e, name, key) {
     for (let i = 0; i < listed.length; i++) {
         listed[i].style.backgroundColor = ""
     }
-    e.target.style.backgroundColor = "#51f592"
+    e.target.style.backgroundColor = "#86efac"
 
     let displayer = document.getElementById('display')
     displayer.innerHTML = ''
-    let mydb = e.target.innerText.trim()
+    let mydb = name
 
     let divs = document.createElement('div')
-    divs.classList.add('flex', 'justify-between', 'items-center')
+    divs.classList.add('flex', 'justify-between', 'items-center', 'tables_header')
 
     let header = document.createElement('h2')
     header.classList.add('text-2xl', 'font-bold')
-    header.innerText = "Tables of the " + mydb + " Database;"
+    header.innerText = "Tables in the " + mydb + " Database;"
     divs.append(header)
 
     let create_t_btn = document.createElement('button')
     create_t_btn.innerText = 'Create New Table'
     create_t_btn.type = 'button'
+    create_t_btn.style.backgroundColor = '#86efac'
+    create_t_btn.style.color = '#1e293b'
 
     create_t_btn.addEventListener('click', e => {
         document.getElementById('create_table_modal').style.display = 'flex'
@@ -89,7 +91,7 @@ async function innerDBClicked(e, name, key) {
     let delete_db_btn = document.createElement('button')
     delete_db_btn.innerText = 'Delete Database'
     delete_db_btn.type = 'button'
-    delete_db_btn.classList.add('bg-red-500')
+    delete_db_btn.style.backgroundColor = '#ec4899'
 
     delete_db_btn.addEventListener('click', async e => {
         let d = new FormData()
@@ -130,14 +132,16 @@ async function innerDBClicked(e, name, key) {
         let td_edit = document.createElement("td")
         let edit_btn = document.createElement('button')
         edit_btn.innerText = 'Edit'
+        edit_btn.classList.add('edit_row')
         td_edit.append(edit_btn)
 
         let td_delete = document.createElement("td")
         let del_btn = document.createElement('button')
+        del_btn.classList.add('remove_row')
         del_btn.innerText = 'Delete'
 
         view_btn.addEventListener('click', async () => {
-            const d = await fetch(`/data?db=${e.target.innerText.trim()}&table=${Object.values(data[i])[0]}`, {method: 'get'})
+            const d = await fetch(`/data?db=${mydb}&table=${Object.values(data[i])[0]}`, {method: 'get'})
             const res = await d.json()
             renderTables(res.data, res.columns, e.target.innerText.trim(), Object.values(data[i])[0])
         })
@@ -197,15 +201,17 @@ function renderTables(data, colu, db, tb) {
     displayer.innerHTML = ''
 
     let divs = document.createElement('div')
-    divs.classList.add('flex', 'justify-between', 'items-center')
+    divs.classList.add('flex', 'justify-between', 'items-center', 'tables_header')
 
     let header = document.createElement('h2')
     header.classList.add('text-2xl', 'font-bold')
-    header.innerText = "Rows of the "
+    header.innerText = "Rows of the " + tb + " table"
     divs.append(header)
 
     let create_t_btn = document.createElement('button')
     create_t_btn.innerText = 'Create New Row'
+    create_t_btn.style.backgroundColor = '#86efac'
+    create_t_btn.style.color = '#1e293b'
     create_t_btn.type = 'button'
 
     create_t_btn.addEventListener('click', e => {
@@ -217,7 +223,7 @@ function renderTables(data, colu, db, tb) {
     let delete_db_btn = document.createElement('button')
     delete_db_btn.innerText = 'Delete Table'
     delete_db_btn.type = 'button'
-    delete_db_btn.classList.add('bg-red-500')
+    delete_db_btn.style.backgroundColor = '#ec4899'
 
     delete_db_btn.addEventListener('click', async e => {
         let d = new FormData()
@@ -309,7 +315,7 @@ function renderForm(colu, data, db, tb) {
 
     let x = document.createElement('button')
     x.innerText = 'X'
-    x.classList.add('bg-red-500', 'rounded-full', 'p-3', 'w-fit', 'self-end')
+    x.classList.add('bg-red-500', '-full', 'p-3', 'w-fit', 'self-end')
     x.type = 'button'
     x.id = 'close_row_modal'
     let er = document.createElement('p')
@@ -375,7 +381,7 @@ add_column_btn.addEventListener('click', (e) => {
     let deleter = document.createElement('button')
     deleter.innerHTML = 'delete'
     deleter.type = 'button'
-    deleter.classList.add('bg-red-300', 'border', 'rounded', 'pointer')
+    deleter.classList.add('bg-red-300', 'border', '', 'pointer')
 
     deleter.addEventListener('click', (e) => {
         copy.remove()

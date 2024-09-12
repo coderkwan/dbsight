@@ -36,7 +36,7 @@
             @endif
         </nav>
         <div class="border-2 border-slate-300 max-w-[80%] w-full  p-5 overflow-scroll max-h-[95vh]">
-            <nav class="bg-slate-200 p-4  uppercase flex gap-5 items-center justify-between mb-5 text-[12px]">
+            <nav class="bg-slate-200 p-4  uppercase flex gap-5 items-center justify-between mb-3 text-[12px]">
                 <div class="flex gap-5 items-center">
                     <a href="/" class="bg-indigo-400 text-gray-200 px-5 py-2 ">Databases</a>
                     <a href="/" class="bg-indigo-400 text-gray-200 px-5 py-2 ">SQL</a>
@@ -47,8 +47,10 @@
                     <a href="/logout" class="bg-black px-4 py-2  text-gray-200">Logout</a>
                 </div>
             </nav>
+            <nav class=" mb-3 text-indigo-400 text-slate-100 text-[10px] flex items-center gap-1" id="breadcrumbs">
+                <a href="/" class="border p-2 bg-slate-500 uppercase">Databases</a>
+            </nav>
             <div id="display" class="">
-                <h2 class="text-2xl mb-3 font-bold text-slate-800">Databases</h2>
                 <div class="flex flex-wrap gap-3 ">
                     @foreach ($dbs as $key => $item)
                         <div onclick="innerDBClicked(event, {{ json_encode($item['Database']) }}, {{ $key }} )"

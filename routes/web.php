@@ -53,7 +53,7 @@ Route::get('/login', function () {
 
 Route::get('/data/tables', function (Request $req) {
     $db = $req->query();
-    $tables = 'SHOW TABLES FROM ' . $db['database'];
+    $tables = "SHOW TABLES FROM `" . $db['database'] . "`";
     $data = DB::connection('dynamic_db')->select($tables);
 
     return response()->json($data);
@@ -63,9 +63,9 @@ Route::get('/data/tables', function (Request $req) {
 Route::get('/data', function (Request $request) {
     $params = $request->query();
 
-    $d = DB::connection('dynamic_db')->select('SELECT * FROM ' . $params['db'] . '.' . $params['table']);
+    $d = DB::connection('dynamic_db')->select("SELECT * FROM `" . $params['db'] . "`.`" . $params['table'] . "`");
 
-    $columns = DB::connection('dynamic_db')->select("SHOW COLUMNS FROM " . $params['db'] . "." . $params['table']);
+    $columns = DB::connection('dynamic_db')->select("SHOW COLUMNS FROM `" . $params['db'] . "`.`" . $params['table'] . "`");
     $columnsArray = [];
     foreach ($columns as $column) {
         $columnsArray[$column->Field] = $column->Type;
@@ -79,7 +79,7 @@ Route::get('/data', function (Request $request) {
 
 Route::post('/delete/row', function (Request $req) {
     $data = $req->input();
-    DB::connection('dynamic_db')->select("DELETE FROM " . $data['db'] . "." . $data['table'] . " WHERE id=" . $data['id']);
+    DB::connection('dynamic_db')->select("DELETE FROM `" . $data['db'] . "`.`" . $data['table'] . "` WHERE id=" . $data['id']);
     return response()->json('done');
 });
 
@@ -99,11 +99,11 @@ Route::post('/create/row', function (Request $req) {
     $k = substr($k, 1);
     $v = substr($v, 1);
 
-    DB::connection('dynamic_db')->select("INSERT INTO " . $data['x_db_'] . "." . $data['x_table_'] . " ( $k ) VALUES ( $v )");
+    DB::connection('dynamic_db')->select("INSERT INTO `" . $data['x_db_'] . "`.`" . $data['x_table_'] . "` ( $k ) VALUES ( $v )");
 
     // fetch fresh data
-    $d = DB::connection('dynamic_db')->select('SELECT * FROM ' . $data['x_db_'] . '.' . $data['x_table_']);
-    $columns = DB::connection('dynamic_db')->select("SHOW COLUMNS FROM " . $data['x_table_']);
+    $d = DB::connection('dynamic_db')->select("SELECT * FROM `" . $data['x_db_'] . "`.`" . $data['x_table_'] . "`");
+    $columns = DB::connection('dynamic_db')->select("SHOW COLUMNS FROM `" . $data['x_table_'] . "`");
     $columnsArray = [];
     foreach ($columns as $column) {
         $columnsArray[$column->Field] = $column->Type;
@@ -119,12 +119,12 @@ Route::post('/create/database', function (Request $req) {
     $data = $req->input();
     $name = str_replace(" ", "_", $data['name']);
 
-    /* try { */
-    $cr = DB::connection('dynamic_db')->select("CREATE DATABASE  " . $name);
-    return redirect('/');
-    /* } catch (\Throwable $th) { */
-    /*     return back()->withErrors("Can't create databse, choose a different name!")->withInput(); */
-    /* } */
+    try {
+        $cr = DB::connection('dynamic_db')->select("CREATE DATABASE  `" . $name . "`");
+        return redirect('/');
+    } catch (\Throwable $th) {
+        return back()->withErrors("Can't create databse, choose a different name!")->withInput();
+    }
 })->middleware(SetDynamicDbConnection::class);
 
 
@@ -141,7 +141,7 @@ Route::post('/create/table', function (Request $req) {
     }
 
     try {
-        DB::connection('dynamic_db')->select("CREATE TABLE " . $data['db'] . "." . $data['name'] . " (" . $text . ")");
+        DB::connection('dynamic_db')->select("CREATE TABLE `" . $data['db'] . "`.`" . $data['name'] . "` (" . $text . ")");
         return response()->json('done baby');
     } catch (\Throwable $th) {
         return response()->json('Failed create the table, make sure the name is unique and your columns include an id column', 400);
@@ -152,9 +152,10 @@ Route::post('/create/table', function (Request $req) {
 Route::post('/delete/table', function (Request $req) {
     $data = $req->input();
     try {
-        DB::connection('dynamic_db')->select("DROP TABLE " . $data['database'] . "." . $data['table']);
+        DB::connection('dynamic_db')->select("DROP TABLE `" . $data['database'] . "`.`" . $data['table'] . "`");
         return response()->json();
     } catch (\Throwable $th) {
+        dd($th);
         return response()->json('failed to delete the table!');
     }
 })->middleware(SetDynamicDbConnection::class);
@@ -163,7 +164,7 @@ Route::post('/delete/table', function (Request $req) {
 Route::post('/delete/database', function (Request $req) {
     $data = $req->input();
     try {
-        DB::connection('dynamic_db')->select("DROP DATABASE " . $data['database']);
+        DB::connection('dynamic_db')->select("DROP DATABASE `" . $data['database'] . "`");
         return response()->json("Database deleted!");
     } catch (\Throwable $th) {
         return response()->json("failed to delete db!");

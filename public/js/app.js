@@ -48,7 +48,28 @@ async function innerDBClicked(e, name, key) {
     for (let i = 0; i < listed.length; i++) {
         listed[i].style.backgroundColor = ""
     }
-    e.target.style.backgroundColor = "#86efac"
+    if (e.target.classList.contains('db_listed')) {
+        e.target.style.backgroundColor = "#86efac"
+    }
+
+    let bc_tb = document.getElementsByClassName('bc_tb')
+    for (let i = 0; i < bc_tb.length; i++) {
+        bc_tb[i].remove();
+    }
+
+    let breadcrumbs = document.getElementById('breadcrumbs')
+    let prev_bc = document.getElementById("bc_" + key)
+
+    if (!prev_bc) {
+        let bc = document.createElement('button')
+        bc.innerText = ">> " + name
+        bc.id = "bc_" + key
+
+        bc.addEventListener('click', (e) => {
+            innerDBClicked(e, name, key)
+        })
+        breadcrumbs.append(bc)
+    }
 
     let displayer = document.getElementById('display')
     displayer.innerHTML = ''
@@ -143,7 +164,7 @@ async function innerDBClicked(e, name, key) {
         view_btn.addEventListener('click', async () => {
             const d = await fetch(`/data?db=${mydb}&table=${Object.values(data[i])[0]}`, {method: 'get'})
             const res = await d.json()
-            renderTables(res.data, res.columns, e.target.innerText.trim(), Object.values(data[i])[0])
+            renderTables(res.data, res.columns, mydb, Object.values(data[i])[0])
         })
 
 
@@ -200,6 +221,21 @@ function renderTables(data, colu, db, tb) {
     let displayer = document.getElementById('display')
     displayer.innerHTML = ''
 
+    let breadcrumbs = document.getElementById('breadcrumbs')
+    let prev_bc = document.getElementById("bcc_" + tb)
+
+    if (!prev_bc) {
+        let bc = document.createElement('button')
+        bc.innerText = "> " + tb
+        bc.id = "bcc_" + tb
+        bc.classList.add('bc_tb')
+
+        bc.addEventListener('click', (e) => {
+            renderTables(data, colu, db, tb)
+        })
+        breadcrumbs.append(bc)
+    }
+
     let divs = document.createElement('div')
     divs.classList.add('flex', 'justify-between', 'items-center', 'tables_header')
 
@@ -225,11 +261,13 @@ function renderTables(data, colu, db, tb) {
     delete_db_btn.type = 'button'
     delete_db_btn.style.backgroundColor = '#ec4899'
 
+    console.log(db, tb)
     delete_db_btn.addEventListener('click', async e => {
         let d = new FormData()
         d.append('database', db)
         d.append('table', tb)
 
+        console.log(db, tb)
         let r = await fetch('/delete/table', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: d})
         let f = await r.json();
         if (r.status == 200) {
@@ -266,6 +304,7 @@ function renderTables(data, colu, db, tb) {
         da.append('table', tb)
         da.append('db', db)
         da.append('id', data[i]['id'])
+        console.log(db, tb)
 
         del_btn.addEventListener('click', async (e) => {
             await fetch('/delete/row', {

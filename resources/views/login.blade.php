@@ -16,8 +16,11 @@
     <form action="/login" method="post" class="p-5 bg-gray-100 flex flex-col w-full max-w-[500px]">
         @csrf
         <label for="">Driver</label>
-        <input type="text" name="driver" placeholder="mysql" required value="{{ old('driver') }}"
-            class="border px-3 py-1">
+        <select name="driver" placeholder="mysql" required value="{{ old('driver') }}" class="border px-3 py-1">
+            <option value="mysql">Mysql</option>
+            <option value="mariadb">MariaDB</option>
+            <option value="pgsql">Postgress</option>
+        </select>
         <label for="">Host</label>
         <input type="text" name="host" placeholder="localhost" required value="{{ old('host') }}"
             class="border px-3 py-1">

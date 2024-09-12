@@ -19,13 +19,13 @@
                 @foreach ($dbs as $key => $item)
                     <div class="border-b border-slate-200">
                         <div class="flex gap-1 text-xl items-center">
-                            <div onclick="sidebarDropDownClicked(event, {{ $key }}, {{ json_encode($item->Database) }})"
+                            <div onclick="sidebarDropDownClicked(event, {{ $key }}, {{ json_encode($item['Database']) }})"
                                 class="cursor-pointer w-[30px] h-[30px] p-2  m-0 bg-green border border-slate-300 text-slate-800 flex items-center justify-center">
                                 +</div>
                             <p id="db_{{ $key }}"
-                                onclick="innerDBClicked(event, {{ json_encode($item->Database) }}, {{ $key }})"
+                                onclick="innerDBClicked(event, {{ json_encode($item['Database']) }}, {{ $key }})"
                                 class="db_listed flex text-sm items-center cursor-pointer font-bold py-2 px-4 w-full  duration-3000 hover:bg-green-200 ">
-                                {{ $item->Database }}
+                                {{ $item['Database'] }}
                             </p>
                         </div>
                         <div id="tables_{{ $key }}"
@@ -51,12 +51,12 @@
                 <h2 class="text-2xl mb-3 font-bold text-slate-800">Databases</h2>
                 <div class="flex flex-wrap gap-3 ">
                     @foreach ($dbs as $key => $item)
-                        <div onclick="innerDBClicked(event, {{ json_encode($item->Database) }}, {{ $key }} )"
+                        <div onclick="innerDBClicked(event, {{ json_encode($item['Database']) }}, {{ $key }} )"
                             class="bg-fuchsia-100 flex flex-col gap-1 cursor-pointer font-bold text text-slate-800 p-5  duration-300 border-2 border-fuchsia-100 hover:border-green-300 hover:bg-transparent">
-                            {{ $item->Database }}
-                            <p class="text-sm font-normal text-slate-500">Tables : {{ $item->table_count }}</p>
+                            {{ $item['Database'] }}
+                            <p class="text-sm font-normal text-slate-500">Tables : {{ $item['table_count'] }}</p>
                             <p class="text-sm font-normal text-pink-500">Database size :
-                                {{ number_format($item->database_size / 1024 / 1024, 2) }} MBs</p>
+                                {{ number_format($item['database_size'] / 1024 / 1024, 2) }} MBs</p>
                         </div>
                     @endforeach
                 </div>
@@ -78,22 +78,24 @@
             </div>
             <div class="">
                 <form id="create_table_modal"
-                    class="absolute top-5 mx-auto left-0 right-0 border-indigo-800 shadow-xl border-2 flex justify-center hidden">
+                    class="absolute top-5 mx-auto left-0 right-0 border-indigo-800 shadow-xl border-2 flex justify-center hidden bg-white">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-2xl font-bold">Create New Table</h3>
+                        <h3 class="text-lg font-bold">Create New Table</h3>
                         <button type="button" id="close_table_modal" class="bg-red-500 w-fit -full pointer">X</button>
                     </div>
                     <p id="create_table_error" class="text-red-500 hidden"> Cannot create table, Please make sure
                         you use a unique name and you columns must contain an 'id' column.</p>
                     <input type="text" name="db" id="create_table_db" required value="{{ old('db') }}"
                         placeholder="table db" hidden>
-                    <input type="text" name="name" required value="{{ old('name') }}" placeholder="table name">
+                    <input type="text" name="name" required value="{{ old('name') }}" placeholder="table name"
+                        class="p-2 border">
                     <h3 class="text-xl">Columns</h3>
                     <div class="flex gap-4 flex-col" id="all_columns">
                         <div class="flex gap-5 items-end" id="each_column">
                             <div class="flex flex-col">
                                 <label for="">Name</label>
-                                <input type="text" name="column[]" required value="id" placeholder="Column name">
+                                <input type="text" name="column[]" required value="id" placeholder="Column name"
+                                    class="p-2 border">
                             </div>
                             <div class="flex flex-col">
                                 <label for="">Type</label>
@@ -133,12 +135,12 @@
                             </div>
                             <div class="flex flex-col">
                                 <label>Default Value</label>
-                                <input name="default[]" type="text" />
+                                <input name="default[]" type="text" class="p-2 border" />
                             </div>
                         </div>
                     </div>
                     <button type="button" id="add_column_btn">Add column +</button>
-                    <button type="submit">Create Table</button>
+                    <button type="submit" class="bg-green-500">Create Table</button>
                     @foreach ($errors->all() as $error)
                         <p class="text-rose-500 font-xs">{{ $error }}</p>
                     @endforeach

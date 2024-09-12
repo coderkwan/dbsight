@@ -186,7 +186,7 @@ async function innerDBClicked(e, name, key) {
 
     if (data.length == 0) {
         let errp = document.createElement('p')
-        let strr = "The Database " + e.target.innerText.trim() + " Has No Tables"
+        let strr = "The Database " + mydb + " Has No Tables"
         errp.innerText = strr
         errp.classList.add('text-xl', 'my-4', 'text-orange-500')
         displayer.append(errp)
@@ -309,13 +309,13 @@ function renderTables(data, colu, db, tb) {
 function renderForm(colu, data, db, tb) {
     let form = document.createElement('form')
     form.id = 'create_row_modal'
-    form.classList.add('absolute', 'top-5', 'mx-auto', 'left-0',
+    form.classList.add('absolute', 'bg-white', 'top-5', 'mx-auto', 'left-0',
         'right-0', 'border-indigo-800', 'shadow-xl', 'border-2',
         'flex', 'justify-center', 'hidden')
 
     let x = document.createElement('button')
     x.innerText = 'X'
-    x.classList.add('bg-red-500', '-full', 'p-3', 'w-fit', 'self-end')
+    x.classList.add('bg-red-500', 'p-3', 'w-fit', 'justify-self-end')
     x.type = 'button'
     x.id = 'close_row_modal'
     let er = document.createElement('p')
@@ -334,6 +334,7 @@ function renderForm(colu, data, db, tb) {
         label.innerText = i + " - " + colu[i]
         let input = document.createElement("input")
         input.type = 'text'
+        input.classList.add('p-2', 'border', 'text-sm')
         input.name = i
         d.append(label)
         d.append(input)
@@ -373,6 +374,7 @@ let add_column_btn = document.getElementById('add_column_btn')
 let _column = document.getElementById('each_column')
 let columns = document.getElementById('all_columns')
 let columns_list = []
+
 add_column_btn.addEventListener('click', (e) => {
     let id = Math.random() * 10
     let copy = _column.cloneNode(true)
@@ -381,7 +383,7 @@ add_column_btn.addEventListener('click', (e) => {
     let deleter = document.createElement('button')
     deleter.innerHTML = 'delete'
     deleter.type = 'button'
-    deleter.classList.add('bg-red-300', 'border', '', 'pointer')
+    deleter.classList.add('bg-red-300', 'border', 'pointer')
 
     deleter.addEventListener('click', (e) => {
         copy.remove()

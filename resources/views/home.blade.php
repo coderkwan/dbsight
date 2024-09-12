@@ -18,24 +18,16 @@
             @if (count($dbs) > 0)
                 @foreach ($dbs as $key => $item)
                     <div class="flex gap-2 text-xl  items-center">
-                        <div onclick="sidebarDropDownClicked(event, {{ $key }})"
+                        <div onclick="sidebarDropDownClicked(event, {{ $key }}, {{ json_encode($item->Database) }})"
                             class="cursor-pointer w-[40px] h-[40px] p-2 rounded me-2 bg-green border border-slate-800 text-slate-800">
                             ></div>
                         <p id="db_{{ $key }}"
-                            onclick="innerDBClicked(event, {{ json_encode($item->Database) }})"
+                            onclick="innerDBClicked(event, {{ json_encode($item->Database) }}, {{ $key }})"
                             class="db_listed flex items-center cursor-pointer font-bold text-xl border border-slate-400 py-2 px-4 rounded mb-3 hover:border-red-300 hover:bg-orange-200 ">
                             {{ $item->Database }}
                         </p>
                     </div>
-                    <div id="tables_{{ $key }}" class="ms-[40px] hidden">
-                        {{-- @foreach ($item['tables'] as $t_key => $table) --}}
-                        {{--     <div id="{{ $item['database'] }}" class="flex gap-2 items-center justify-between"> --}}
-                        {{--         <p id="table_{{ $key . '_' . $t_key }}" --}}
-                        {{--             onclick="tableClicked(event,{{ $t_key }}, {{ $key }})" --}}
-                        {{--             class="w-full text-sm cursor-pointer border border-slate-400 py-1 px-4 rounded mb-1 hover:border-red-300 hover:bg-orange-100"> --}}
-                        {{--             {{ $table->{'Tables_in_' . $item['database'] . ''} }}</p> --}}
-                        {{--     </div> --}}
-                        {{-- @endforeach --}}
+                    <div id="tables_{{ $key }}" class="ms-[40px] hidden flex flex-col gap-2 mb-3">
                     </div>
                 @endforeach
             @endif
@@ -56,7 +48,7 @@
                 <h2 class="text-4xl mb-3 font-bold">Databases</h2>
                 <div class="flex flex-wrap gap-3 ">
                     @foreach ($dbs as $key => $item)
-                        <div onclick="innerDBClicked(event, {{ json_encode($item->Database) }} )"
+                        <div onclick="innerDBClicked(event, {{ json_encode($item->Database) }}, {{ $key }} )"
                             class="flex items-center cursor-pointer font-bold text-xl border border-slate-400 py-2 px-4 rounded mb-3 hover:border-red-300 hover:bg-orange-200 ">
                             {{ $item->Database }}
                         </div>

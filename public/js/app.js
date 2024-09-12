@@ -2,31 +2,13 @@
 let prev_table = '';
 let token = document.querySelector('input[name="_token"]').getAttribute('value')
 
-async function tableClicked(e, key, parent_k) {
-    let el = e.target
-
-    if (el.classList.contains('active')) {
-
-    } else {
-        let prev = document.getElementById(prev_table)
-        if (prev) {
-            prev.style.color = ''
-            prev.style.borderColor = ''
-            prev.classList.remove('active')
-        }
-
-        el.classList.add('active')
-        el.style.color = 'blue'
-        el.style.borderColor = 'blue'
-        prev_table = 'table_' + parent_k + '_' + key
-    }
-
-    const d = await fetch(`/data?db=${el.parentNode.id}&table=${el.innerText}`, {method: 'get'})
+async function tableClicked(db, tb) {
+    const d = await fetch(`/data?db=${db}&table=${tb}`, {method: 'get'})
     const res = await d.json()
-    renderTables(res.data, res.columns, el.parentNode.id, el.innerText)
+    renderTables(res.data, res.columns, db, tb)
 }
 
-function sidebarDropDownClicked(e, key) {
+function sidebarDropDownClicked(e, key, name) {
     let el = e.target
     if (el.classList.contains('active')) {
         el.classList.remove('text-green', 'active')
@@ -36,11 +18,29 @@ function sidebarDropDownClicked(e, key) {
         el.classList.add('text-green', 'active')
         el.style.transform = 'rotate(90deg)'
         document.getElementById(`tables_${key}`).classList.remove('hidden')
+        fetchForSideBar(key, name)
     }
 }
 
-async function innerDBClicked(e, name) {
-    console.log('hello')
+async function fetchForSideBar(id, name) {
+    let dd = await fetch(`/data/tables?database=${name}`, {method: "get"})
+    let data = await dd.json()
+
+    let p = document.getElementById(`tables_${id}`)
+    p.innerHTML = ''
+
+    for (let i = 0; i < data.length; i++) {
+        let d = document.createElement('div')
+        d.id = id + "_" + i
+        d.classList.add('p-2', 'border', 'rounded', 'cursor-pointer')
+        let tab = data[i][`Tables_in_${name}`]
+        d.innerText = tab
+        d.addEventListener('click', () => tableClicked(name, tab))
+        p.append(d)
+    }
+}
+
+async function innerDBClicked(e, name, key) {
     let dd = await fetch(`/data/tables?database=${name}`, {method: "get"})
     let data = await dd.json()
 
@@ -120,6 +120,7 @@ async function innerDBClicked(e, name) {
 
     for (let i = 0; i < data.length; i++) {
         let tr = document.createElement("tr")
+        tr.id = "tr_" + key + "_" + i
 
         let td_view = document.createElement("td")
         let view_btn = document.createElement('button')
@@ -154,6 +155,8 @@ async function innerDBClicked(e, name) {
                 },
             })
             if (dt.status == 200) {
+                let peer = document.getElementById(key + `_` + i)
+                peer ? peer.remove() : null
                 tr.remove()
             }
         })

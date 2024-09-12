@@ -15,26 +15,27 @@
 <body class="m-4">
     <main class="flex gap-4">
         <nav class="max-w-[400px]">
-            @if (count($database_data) > 0)
-                @foreach ($database_data as $key => $item)
-                    <p id="db_{{ $key }}" onclick="dbClicked(event, {{ $key }})"
-                        class="flex items-center cursor-pointer font-bold text-xl border border-slate-400 py-2 px-4 rounded mb-3 hover:border-red-300 hover:bg-orange-200 ">
-                        <span class="px-2 rounded me-2 bg-green border border-slate-400 text-slate-400">></span>
-                        {{ $item['database'] }}
-                    </p>
-                    <div id="tables_{{ $key }}" class="ms-5 hidden">
-                        <button class="text-xs mb-2">New Table</button>
-                        <button class="text-xs mb-2 bg-rose-300">Delete Database</button>
-                        @foreach ($item['tables'] as $t_key => $table)
-                            <div id="{{ $item['database'] }}" class="flex gap-2 items-center justify-between">
-                                <p id="table_{{ $key . '_' . $t_key }}"
-                                    onclick="tableClicked(event,{{ $t_key }}, {{ $key }})"
-                                    class="w-full text-sm cursor-pointer border border-slate-400 py-1 px-4 rounded mb-1 hover:border-red-300 hover:bg-orange-100">
-                                    {{ $table->{'Tables_in_' . $item['database'] . ''} }}</p>
-                                <span class="bg-fuchsia-300 py-2 px-5 cursor-pointer rounded text-xs">Edit</span>
-                                <span class="bg-rose-400 py-2 px-5 cursor-pointer rounded text-xs">Detele</span>
-                            </div>
-                        @endforeach
+            @if (count($dbs) > 0)
+                @foreach ($dbs as $key => $item)
+                    <div class="flex gap-2 text-xl  items-center">
+                        <div onclick="sidebarDropDownClicked(event, {{ $key }})"
+                            class="cursor-pointer w-[40px] h-[40px] p-2 rounded me-2 bg-green border border-slate-800 text-slate-800">
+                            ></div>
+                        <p id="db_{{ $key }}"
+                            onclick="innerDBClicked(event, {{ json_encode($item->Database) }})"
+                            class="db_listed flex items-center cursor-pointer font-bold text-xl border border-slate-400 py-2 px-4 rounded mb-3 hover:border-red-300 hover:bg-orange-200 ">
+                            {{ $item->Database }}
+                        </p>
+                    </div>
+                    <div id="tables_{{ $key }}" class="ms-[40px] hidden">
+                        {{-- @foreach ($item['tables'] as $t_key => $table) --}}
+                        {{--     <div id="{{ $item['database'] }}" class="flex gap-2 items-center justify-between"> --}}
+                        {{--         <p id="table_{{ $key . '_' . $t_key }}" --}}
+                        {{--             onclick="tableClicked(event,{{ $t_key }}, {{ $key }})" --}}
+                        {{--             class="w-full text-sm cursor-pointer border border-slate-400 py-1 px-4 rounded mb-1 hover:border-red-300 hover:bg-orange-100"> --}}
+                        {{--             {{ $table->{'Tables_in_' . $item['database'] . ''} }}</p> --}}
+                        {{--     </div> --}}
+                        {{-- @endforeach --}}
                     </div>
                 @endforeach
             @endif
@@ -47,7 +48,6 @@
                     <a href="/" class="bg-indigo-300 px-4 py-1 rounded">Import</a>
                     <a href="/" class="bg-indigo-300 px-4 py-1 rounded">Export</a>
                 </div>
-
                 <div class="flex gap-5 items-center">
                     <a href="/" class="bg-pink-300 px-4 py-1 rounded">Logout</a>
                 </div>
@@ -55,11 +55,10 @@
             <div id="display">
                 <h2 class="text-4xl mb-3 font-bold">Databases</h2>
                 <div class="flex flex-wrap gap-3 ">
-                    @foreach ($database_data as $key => $item)
-                        <div id="db_{{ $key }}" data-tables="{{ json_encode($item['tables']) }}"
-                            onclick="innerDBClicked(event, {{ json_encode($item['tables']) }} )"
+                    @foreach ($dbs as $key => $item)
+                        <div onclick="innerDBClicked(event, {{ json_encode($item->Database) }} )"
                             class="flex items-center cursor-pointer font-bold text-xl border border-slate-400 py-2 px-4 rounded mb-3 hover:border-red-300 hover:bg-orange-200 ">
-                            {{ $item['database'] }}
+                            {{ $item->Database }}
                         </div>
                     @endforeach
                 </div>

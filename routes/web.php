@@ -1,31 +1,35 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $dbs = DB::select('SHOW DATABASES');
-
-    $database_data = [];
-
-    foreach ($dbs as $key => $value) {
-        $statement = 'SHOW TABLES FROM ' . $value->Database;
-        $tables = DB::select($statement);
-        /* dd($tables); */
-        array_push($database_data, ['tables' => $tables, 'database' => $value->Database]);
-    }
-
-    return view('home', compact('database_data'));
+    return view('home', compact('dbs'));
 })->name('home');
+
+
+Route::get('/data/tables', function (Request $req) {
+    $db = $req->query();
+    $tables = 'SHOW TABLES FROM ' . $db['database'];
+    $data = DB::select($tables);
+
+    return response()->json($data);
+});
 
 Route::get('/data', function (Request $request) {
     $params = $request->query();
 
     $d = DB::select('SELECT * FROM ' . $params['db'] . '.' . $params['table']);
-    $data = ['data' => $d];
+
+    $columns = DB::select("SHOW COLUMNS FROM " . $params['table']);
+    $columnsArray = [];
+    foreach ($columns as $column) {
+        $columnsArray[$column->Field] = $column->Type;
+    }
+
+    $data = ['data' => $d, 'columns' => $columnsArray];
 
     return response()->json($data);
 });
@@ -53,7 +57,19 @@ Route::post('/create/row', function (Request $req) {
     $v = substr($v, 1);
 
     DB::select("INSERT INTO " . $data['x_db_'] . "." . $data['x_table_'] . " ( $k ) VALUES ( $v )");
-    return response()->json("done");
+
+
+    // fetch fresh data
+    $d = DB::select('SELECT * FROM ' . $data['x_db_'] . '.' . $data['x_table_']);
+    $columns = DB::select("SHOW COLUMNS FROM " . $data['x_table_']);
+    $columnsArray = [];
+    foreach ($columns as $column) {
+        $columnsArray[$column->Field] = $column->Type;
+    }
+
+    $data = ['data' => $d, 'columns' => $columnsArray];
+
+    return response()->json($data);
 });
 
 

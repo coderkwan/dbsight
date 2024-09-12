@@ -23,22 +23,33 @@ async function tableClicked(e, key, parent_k) {
 
     const d = await fetch(`/data?db=${el.parentNode.id}&table=${el.innerText}`, {method: 'get'})
     const res = await d.json()
-    renderTables(res.data, el.parentNode.id, el.innerText)
+    renderTables(res.data, res.columns, el.parentNode.id, el.innerText)
 }
 
-function dbClicked(e, key) {
+function sidebarDropDownClicked(e, key) {
     let el = e.target
-
     if (el.classList.contains('active')) {
         el.classList.remove('text-green', 'active')
+        el.style.transform = 'rotate(360deg)'
         document.getElementById(`tables_${key}`).classList.add('hidden')
     } else {
         el.classList.add('text-green', 'active')
+        el.style.transform = 'rotate(90deg)'
         document.getElementById(`tables_${key}`).classList.remove('hidden')
     }
 }
 
-function innerDBClicked(e, data) {
+async function innerDBClicked(e, name) {
+    console.log('hello')
+    let dd = await fetch(`/data/tables?database=${name}`, {method: "get"})
+    let data = await dd.json()
+
+    let listed = document.getElementsByClassName('db_listed')
+    for (let i = 0; i < listed.length; i++) {
+        listed[i].style.backgroundColor = ""
+    }
+    e.target.style.backgroundColor = "#51f592"
+
     let displayer = document.getElementById('display')
     displayer.innerHTML = ''
     let mydb = e.target.innerText.trim()
@@ -89,7 +100,6 @@ function innerDBClicked(e, data) {
         if (r.status == 200) {
             window.location.href = "/"
         }
-        console.log(f)
     })
 
     divs.append(delete_db_btn)
@@ -128,7 +138,7 @@ function innerDBClicked(e, data) {
         view_btn.addEventListener('click', async () => {
             const d = await fetch(`/data?db=${e.target.innerText.trim()}&table=${Object.values(data[i])[0]}`, {method: 'get'})
             const res = await d.json()
-            renderTables(res.data, e.target.innerText.trim(), Object.values(data[i])[0])
+            renderTables(res.data, res.columns, e.target.innerText.trim(), Object.values(data[i])[0])
         })
 
 
@@ -176,88 +186,143 @@ function innerDBClicked(e, data) {
     }
 
 }
-function renderTables(data, db, tb) {
+
+
+// render row tables
+function renderTables(data, colu, db, tb) {
     let displayer = document.getElementById('display')
-    if (data.length > 0) {
+    displayer.innerHTML = ''
 
-        let table = document.createElement('table')
-        let table_h = document.createElement('thead')
-        let table_b = document.createElement('tbody')
+    let divs = document.createElement('div')
+    divs.classList.add('flex', 'justify-between', 'items-center')
 
-        let th_edit = document.createElement("th")
-        th_edit.innerText = "Edit"
-        let th_delete = document.createElement("th")
-        th_delete.innerText = "Delete"
+    let header = document.createElement('h2')
+    header.classList.add('text-2xl', 'font-bold')
+    header.innerText = "Rows of the "
+    divs.append(header)
 
-        table_h.append(th_delete)
-        table_h.append(th_edit)
+    let create_t_btn = document.createElement('button')
+    create_t_btn.innerText = 'Create New Row'
+    create_t_btn.type = 'button'
 
+    create_t_btn.addEventListener('click', e => {
+        document.getElementById('create_row_modal').style.display = 'flex'
+    })
 
-        for (let i in data[0]) {
-            let th = document.createElement("th")
-            th.innerText = i
-            table_h.append(th)
+    divs.append(create_t_btn)
+
+    let delete_db_btn = document.createElement('button')
+    delete_db_btn.innerText = 'Delete Table'
+    delete_db_btn.type = 'button'
+    delete_db_btn.classList.add('bg-red-500')
+
+    delete_db_btn.addEventListener('click', async e => {
+        let d = new FormData()
+        d.append('database', db)
+        d.append('table', tb)
+
+        let r = await fetch('/delete/table', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: d})
+        let f = await r.json();
+        if (r.status == 200) {
+            window.location.href = "/"
         }
+    })
 
-        for (let i = 0; i < data.length; i++) {
-            let tr = document.createElement("tr")
+    divs.append(delete_db_btn)
+    displayer.append(divs)
 
-            let td_edit = document.createElement("td")
-            let edit_btn = document.createElement('button')
-            edit_btn.innerText = 'Edit'
-            td_edit.append(edit_btn)
+    let table = document.createElement('table')
+    let table_h = document.createElement('thead')
+    let table_b = document.createElement('tbody')
 
-            let td_delete = document.createElement("td")
-            let del_btn = document.createElement('button')
-            del_btn.innerText = 'Delete'
+    for (let i in colu) {
+        let th = document.createElement("th")
+        th.innerText = i
+        table_h.append(th)
+    }
 
-            let da = new FormData()
-            da.append('table', tb)
-            da.append('db', db)
-            da.append('id', data[i]['id'])
+    for (let i = 0; i < data.length; i++) {
+        let tr = document.createElement("tr")
 
-            del_btn.addEventListener('click', async (e) => {
-                await fetch('/delete/row', {
-                    method: "POST", body: da,
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    },
-                })
-                tr.remove()
+        let td_edit = document.createElement("td")
+        let edit_btn = document.createElement('button')
+        edit_btn.innerText = 'Edit'
+        td_edit.append(edit_btn)
+
+        let td_delete = document.createElement("td")
+        let del_btn = document.createElement('button')
+        del_btn.innerText = 'Delete'
+
+        let da = new FormData()
+        da.append('table', tb)
+        da.append('db', db)
+        da.append('id', data[i]['id'])
+
+        del_btn.addEventListener('click', async (e) => {
+            await fetch('/delete/row', {
+                method: "POST", body: da,
+                headers: {
+                    'X-CSRF-TOKEN': token
+                },
             })
+            tr.remove()
+        })
 
-            td_delete.append(del_btn)
+        td_delete.append(del_btn)
 
-            tr.append(td_delete)
-            tr.append(td_edit)
 
-            for (let b in data[i]) {
-                let td = document.createElement("td")
-                td.innerText = data[i][b]
-                tr.append(td)
-            }
-            table_b.append(tr)
+        for (let b in data[i]) {
+            let td = document.createElement("td")
+            td.innerText = data[i][b]
+            tr.append(td)
         }
 
-        table.append(table_h)
-        table.append(table_b)
-        displayer.innerHTML = ''
-        displayer.append(table)
-        displayer.append(renderForm(data[0], db, tb))
+        tr.append(td_edit)
+        tr.append(td_delete)
 
-    } else {
-        displayer.innerHTML = "<p>No data</p>"
+        table_b.append(tr)
+    }
+
+    table.append(table_h)
+    table.append(table_b)
+    displayer.append(table)
+    displayer.append(renderForm(colu, data, db, tb))
+
+    if (data.length == 0) {
+        let ee = document.createElement('p')
+        ee.innerText = 'There are no rows in this table'
+        displayer.append(ee)
     }
 
 }
 
-function renderForm(data, db, tb) {
+// render create row form
+function renderForm(colu, data, db, tb) {
     let form = document.createElement('form')
-    for (let i in data) {
+    form.id = 'create_row_modal'
+    form.classList.add('absolute', 'top-5', 'mx-auto', 'left-0',
+        'right-0', 'border-indigo-800', 'shadow-xl', 'border-2',
+        'flex', 'justify-center', 'hidden')
+
+    let x = document.createElement('button')
+    x.innerText = 'X'
+    x.classList.add('bg-red-500', 'rounded-full', 'p-3', 'w-fit', 'self-end')
+    x.type = 'button'
+    x.id = 'close_row_modal'
+    let er = document.createElement('p')
+    er.innerText = 'Failed to create row Please make sure the values have the corect type.'
+    er.classList.add('text-red-300', 'hidden')
+    x.addEventListener('click', (e) => {
+        form.style.display = 'none'
+        er.style.display = 'none'
+    })
+    form.append(x)
+    form.append(er)
+    for (let i in colu) {
         let d = document.createElement("div")
         d.classList.add('form_element')
         let label = document.createElement("label")
-        label.innerText = i
+        label.innerText = i + " - " + colu[i]
         let input = document.createElement("input")
         input.type = 'text'
         input.name = i
@@ -277,22 +342,28 @@ function renderForm(data, db, tb) {
         da.append('x_table_', tb)
         da.append('x_db_', db)
 
-        await fetch('/create/row', {
+        let dr = await fetch('/create/row', {
             method: "POST", body: da,
             headers: {
                 'X-CSRF-TOKEN': token
             },
         })
-        console.log('go')
+        if (dr.status == 200) {
+            form.style.display = 'none'
+            let f = await dr.json()
+            renderTables(f.data, f.columns, db, tb)
+        } else {
+            er.style.display = 'flex'
+        }
     })
     return form
 }
 
+// add column on create column form
 let add_column_btn = document.getElementById('add_column_btn')
 let _column = document.getElementById('each_column')
 let columns = document.getElementById('all_columns')
 let columns_list = []
-
 add_column_btn.addEventListener('click', (e) => {
     let id = Math.random() * 10
     let copy = _column.cloneNode(true)
@@ -311,9 +382,6 @@ add_column_btn.addEventListener('click', (e) => {
     columns.append(copy)
 
     let ele = document.getElementById(id).getElementsByTagName('input')
-    console.log(ele)
-    console.log(ele.length)
-    console.log(ele[0])
 
     for (let i = 0; ele.length > i; i++) {
         ele[i].value = ''
@@ -321,8 +389,8 @@ add_column_btn.addEventListener('click', (e) => {
 })
 
 
+// close create table modal
 let close_table_modal = document.getElementById('close_table_modal')
-
 close_table_modal.addEventListener('click', (e) => {
     e.target.parentNode.parentNode.style.display = 'none'
     document.getElementById('create_table_error').style.display = 'none'

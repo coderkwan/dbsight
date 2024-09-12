@@ -14,22 +14,21 @@
 </head>
 <body class="m-4 bg-gray-100">
     <main class="flex gap-4">
-        <nav class="max-w-[20%] w-full border-2 border-slate-300 p-2 overflow-scroll max-h-[95vh]">
+        <nav id="sidebar" class="max-w-[20%] w-full border-2 border-slate-300 p-2 overflow-scroll max-h-[95vh]">
             @if (count($dbs) > 0)
                 @foreach ($dbs as $key => $item)
-                    <div class="border-b border-slate-200">
-                        <div class="flex gap-1 text-xl items-center">
+                    <div class="side_container">
+                        <div class="side_wrapper ">
                             <div onclick="sidebarDropDownClicked(event, {{ $key }}, {{ json_encode($item['Database']) }})"
-                                class="cursor-pointer w-[30px] h-[30px] p-2  m-0 bg-green border border-slate-300 text-slate-800 flex items-center justify-center">
+                                class="side_drop">
                                 +</div>
                             <p id="db_{{ $key }}"
                                 onclick="innerDBClicked(event, {{ json_encode($item['Database']) }}, {{ $key }})"
-                                class="db_listed flex text-sm items-center cursor-pointer font-bold py-2 px-4 w-full  duration-3000 hover:bg-green-200 ">
+                                class="db_listed">
                                 {{ $item['Database'] }}
                             </p>
                         </div>
-                        <div id="tables_{{ $key }}"
-                            class="ms-[40px] hidden truncate flex flex-col gap-2 bg-white p-3  text-[10px]">
+                        <div id="tables_{{ $key }}" class="table_listed">
                         </div>
                     </div>
                 @endforeach
@@ -48,35 +47,35 @@
                 </div>
             </nav>
             <nav class=" mb-3 text-indigo-400 text-slate-100 text-[10px] flex items-center gap-1" id="breadcrumbs">
-                <a href="/" class="border p-2 bg-slate-500 uppercase">Databases</a>
+                <button class="border p-2 bg-slate-500 uppercase" onclick="getDbsApi()">Databases</a>
             </nav>
-            <div id="display" class="">
-                <div class="flex flex-wrap gap-3 ">
-                    @foreach ($dbs as $key => $item)
-                        <div onclick="innerDBClicked(event, {{ json_encode($item['Database']) }}, {{ $key }} )"
-                            class="bg-fuchsia-100 flex flex-col gap-1 cursor-pointer font-bold text text-slate-800 p-5  duration-300 border-2 border-fuchsia-100 hover:border-green-300 hover:bg-transparent">
-                            {{ $item['Database'] }}
-                            <p class="text-sm font-normal text-slate-500">Tables : {{ $item['table_count'] }}</p>
-                            <p class="text-sm font-normal text-pink-500">Database size :
-                                {{ number_format($item['database_size'] / 1024 / 1024, 2) }} MBs</p>
-                        </div>
-                    @endforeach
-                </div>
-                <div>
-                    <form action="/create/database" method="post" class="w-full">
-                        @csrf
-                        <div class="flex gap-2 items-center w-full">
-                            <input type="text" name="name" value="{{ old('name') }}"
-                                placeholder="database name" class="py-2 px-5  border border-slate-200">
-                            <button type="submit"
-                                class="py-2 px-5  border text-slate-800 uppercase text-[12px] border-slate-200 bg-green-300">Create
-                                Database</button>
-                        </div>
-                        @foreach ($errors->all() as $error)
-                            <p class="text-rose-500 text-sm">{{ $error }}</p>
+            <div id="displayer" class="">
+                <div id="display" class="">
+                    <div class="flex flex-wrap gap-3">
+                        @foreach ($dbs as $key => $item)
+                            <div onclick="innerDBClicked(event, {{ json_encode($item['Database']) }}, {{ $key }} )"
+                                class="db_card">
+                                {{ $item['Database'] }}
+                                <p>Tables : {{ $item['table_count'] }}</p>
+                                <p>Database size :
+                                    {{ number_format($item['database_size'] / 1024 / 1024, 2) }} MBs</p>
+                            </div>
                         @endforeach
-                    </form>
+                    </div>
                 </div>
+                <form id="create_database_form" action="/create/database" method="post" class="w-full">
+                    @csrf
+                    <div class="flex gap-2 items-center w-full">
+                        <input type="text" name="name" value="{{ old('name') }}" placeholder="database name"
+                            class="py-2 px-5  border border-slate-200">
+                        <button type="submit"
+                            class="py-2 px-5  border text-slate-800 uppercase text-[12px] border-slate-200 bg-green-300">Create
+                            Database</button>
+                    </div>
+                    @foreach ($errors->all() as $error)
+                        <p class="text-rose-500 text-sm">{{ $error }}</p>
+                    @endforeach
+                </form>
             </div>
             <div class="">
                 <form id="create_table_modal"

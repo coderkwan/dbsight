@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $databases = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys');");
-
-    $results = [];
-
     foreach ($databases as $db) {
         $dbName = $db->SCHEMA_NAME;
         $sizeQuery = "SELECT
@@ -21,15 +18,12 @@ Route::get('/', function () {
                   WHERE
                     table_schema = '{$dbName}'";
 
-
-        // Query to get the number of tables in the database
         $tableCountQuery = "SELECT
                           COUNT(*) AS table_count
                         FROM
                           `information_schema`.TABLES
                         WHERE
                           table_schema = '{$dbName}'";
-
 
         $sizeResult = DB::connection('dynamic_db')->select($sizeQuery);
         $tableCountResult = DB::connection('dynamic_db')->select($tableCountQuery);
@@ -40,11 +34,39 @@ Route::get('/', function () {
             'table_count' => $tableCountResult[0]->table_count
         ];
     }
-
-
-
     return view('home', compact('dbs'));
 })->name('home')->middleware(SetDynamicDbConnection::class);
+
+Route::get('/home', function () {
+    $databases = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys');");
+    foreach ($databases as $db) {
+        $dbName = $db->SCHEMA_NAME;
+        $sizeQuery = "SELECT
+                    SUM(data_length + index_length) AS database_size
+                  FROM
+                    `information_schema`.TABLES
+                  WHERE
+                    table_schema = '{$dbName}'";
+
+        $tableCountQuery = "SELECT
+                          COUNT(*) AS table_count
+                        FROM
+                          `information_schema`.TABLES
+                        WHERE
+                          table_schema = '{$dbName}'";
+
+        $sizeResult = DB::connection('dynamic_db')->select($sizeQuery);
+        $tableCountResult = DB::connection('dynamic_db')->select($tableCountQuery);
+
+        $dbs[] = [
+            'Database' => $dbName,
+            'database_size' => $sizeResult[0]->database_size,
+            'table_count' => $tableCountResult[0]->table_count
+        ];
+    }
+    return response()->json($dbs);
+})->middleware(SetDynamicDbConnection::class);
+
 
 Route::get('/login', function () {
     return view('login');

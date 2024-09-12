@@ -13,26 +13,25 @@ function sidebarDropDownClicked(e, key, name) {
     if (el.classList.contains('active')) {
         el.classList.remove('text-green', 'active')
         el.innerText = "+"
-        document.getElementById(`tables_${key}`).classList.add('hidden')
+        document.getElementById(`tables_${key}`).style.display = 'none'
     } else {
         el.classList.add('text-green', 'active')
         el.innerText = "-"
-        document.getElementById(`tables_${key}`).classList.remove('hidden')
-        fetchForSideBar(key, name)
+        document.getElementById(`tables_${key}`).style.display = 'flex'
+        let p = document.getElementById(`tables_${key}`)
+        fetchForSideBar(key, name, p)
     }
 }
 
-async function fetchForSideBar(id, name) {
+async function fetchForSideBar(id, name, p, d) {
     let dd = await fetch(`/data/tables?database=${name}`, {method: "get"})
     let data = await dd.json()
-
-    let p = document.getElementById(`tables_${id}`)
     p.innerHTML = ''
 
     for (let i = 0; i < data.length; i++) {
         let d = document.createElement('div')
         d.id = id + "_" + i
-        d.classList.add('py-1', 'p-2', 'border', '', 'cursor-pointer')
+        d.classList.add('py-1', 'p-2', 'border', 'cursor-pointer')
         let tab = data[i][`Tables_in_${name}`]
         d.innerText = tab
         d.addEventListener('click', () => tableClicked(name, tab))
@@ -447,3 +446,87 @@ close_table_modal.addEventListener('click', (e) => {
     document.getElementById('create_table_db').removeEventListener('submit', () => {return })
 
 })
+
+
+async function getDbsApi() {
+    let d = await fetch('/home', {method: 'get'})
+    const res = await d.json()
+
+    //render dbs
+    let displayer = document.getElementById('display')
+    displayer.innerHTML = ''
+    let container = document.createElement('div')
+    container.classList.add('flex', 'flex-wrap', 'gap-3')
+
+    // sidebar
+    let sb = document.getElementById('sidebar')
+    sb.innerHTML = ''
+
+    res.forEach((item, i) => {
+        let element = document.createElement('div')
+        element.classList.add('db_card')
+        element.innerText = item['Database']
+
+        let pa = document.createElement('p')
+        let pb = document.createElement('p')
+        pa.innerText = "Tables: " + item['table_count']
+        pb.innerText = "Database size: " + (item['database_size'] / 1024 / 1024).toFixed(2) + " MBs"
+
+        element.append(pa)
+        element.append(pb)
+        element.addEventListener('click', (e) => innerDBClicked(e, item['Database'], i))
+
+        container.append(element)
+
+        // sidebar
+        let sb_container = document.createElement('div')
+        sb_container.classList.add('side_container')
+        let sb_wrap = document.createElement('div')
+        sb_wrap.classList.add('side_wrapper')
+
+        let sb_drop = document.createElement('div')
+        sb_drop.classList.add('side_drop')
+        sb_drop.innerText = '+'
+
+        let sb_p = document.createElement('p')
+        sb_p.classList.add('db_listed')
+        sb_p.id = "db_" + i
+        sb_p.innerText = item['Database']
+        sb_p.addEventListener('click', (e) => innerDBClicked(e, item['Database'], i))
+
+        let sb_kids = document.createElement('div')
+        sb_kids.classList.add('table_listed')
+        sb_kids.id = 'tables_' + i
+
+        sb_wrap.append(sb_drop)
+        sb_wrap.append(sb_p)
+        sb_container.append(sb_wrap)
+        sb_container.append(sb_kids)
+        sb.append(sb_container)
+
+        sb_drop.addEventListener('click', (e) => {
+            let el = e.target
+            if (el.classList.contains('active')) {
+                el.classList.remove('text-green', 'active')
+                el.innerText = "+"
+                sb_kids.style.display = 'none'
+            } else {
+                el.classList.add('text-green', 'active')
+                el.innerText = "-"
+                sb_kids.style.display = 'flex'
+                fetchForSideBar(i, item['Database'], sb_kids)
+            }
+        })
+
+    })
+    displayer.append(container)
+
+    // clean breadcrumbs
+    let bc = document.getElementById('breadcrumbs')
+    bc.innerHTML = '<button class="border p-2 bg-slate-500 uppercase" onclick="getDbsApi()">Databases</a>'
+}
+
+
+
+
+

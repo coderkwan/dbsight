@@ -97,3 +97,71 @@ button {
     background-color: #cbd5e1;
     color: #475569;
 }
+
+/* bg-fuchsia-100 flex flex-col gap-1 cursor-pointer font-bold text text-slate-800 p-5  duration-300 border-2 border-fuchsia-100 hover:border-green-300 hover:bg-transparent */
+.db_card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 16px;
+    border: 2px solid #f5d0fe;
+    background-color: #fbcfe8;
+    color: #334155;
+    transition: ease all 0.6s;
+}
+
+.db_card p {
+    font-weight: normal;
+    font-size: 12px;
+    color: #9333ea;
+}
+
+.db_card p:nth-child(2) {
+    color: #db2777;
+}
+
+.db_card:hover {
+    border-color: #bbf7d0;
+    background-color: transparent;
+}
+
+.side_container {
+    border: 1px solid;
+}
+
+.side_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.side_drop {
+    cursor: pointer;
+    border: 1px solid;
+    padding: 5px;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.db_listed {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+}
+
+.table_listed {
+    margin-left: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background-color: white;
+    font-size: 10px;
+}

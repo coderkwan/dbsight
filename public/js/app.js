@@ -2,13 +2,13 @@
 let prev_table = '';
 let token = document.querySelector('input[name="_token"]').getAttribute('value')
 
-async function tableClicked(db, tb) {
+async function getRows(db, tb) {
     const d = await fetch(`/data?db=${db}&table=${tb}`, {method: 'get'})
     const res = await d.json()
-    renderTables(res.data, res.columns, db, tb)
+    renderRowsTable(res.data, res.columns, db, tb)
 }
 
-function sidebarDropDownClicked(e, key, name) {
+async function sidebarDropDownClicked(e, key, name) {
     let el = e.target
     if (el.classList.contains('active')) {
         el.classList.remove('text-green', 'active')
@@ -19,27 +19,24 @@ function sidebarDropDownClicked(e, key, name) {
         el.innerText = "-"
         document.getElementById(`tables_${key}`).style.display = 'flex'
         let p = document.getElementById(`tables_${key}`)
-        fetchForSideBar(key, name, p)
+
+        let dd = await fetch(`/data/tables?database=${name}`, {method: "get"})
+        let data = await dd.json()
+        p.innerHTML = ''
+
+        for (let i = 0; i < data.length; i++) {
+            let d = document.createElement('div')
+            d.id = key + "_" + i
+            d.classList.add('py-1', 'p-2', 'border', 'cursor-pointer')
+            let tab = data[i][`Tables_in_${name}`]
+            d.innerText = tab
+            d.addEventListener('click', () => getRows(name, tab))
+            p.append(d)
+        }
     }
 }
 
-async function fetchForSideBar(id, name, p, d) {
-    let dd = await fetch(`/data/tables?database=${name}`, {method: "get"})
-    let data = await dd.json()
-    p.innerHTML = ''
-
-    for (let i = 0; i < data.length; i++) {
-        let d = document.createElement('div')
-        d.id = id + "_" + i
-        d.classList.add('py-1', 'p-2', 'border', 'cursor-pointer')
-        let tab = data[i][`Tables_in_${name}`]
-        d.innerText = tab
-        d.addEventListener('click', () => tableClicked(name, tab))
-        p.append(d)
-    }
-}
-
-async function innerDBClicked(e, name, key) {
+async function getTables(e, name, key) {
     let dd = await fetch(`/data/tables?database=${name}`, {method: "get"})
     let data = await dd.json()
 
@@ -54,20 +51,6 @@ async function innerDBClicked(e, name, key) {
     let bc_tb = document.getElementsByClassName('bc_tb')
     for (let i = 0; i < bc_tb.length; i++) {
         bc_tb[i].remove();
-    }
-
-    let breadcrumbs = document.getElementById('breadcrumbs')
-    let prev_bc = document.getElementById("bc_" + key)
-
-    if (!prev_bc) {
-        let bc = document.createElement('button')
-        bc.innerText = ">> " + name
-        bc.id = "bc_" + key
-
-        bc.addEventListener('click', (e) => {
-            innerDBClicked(e, name, key)
-        })
-        breadcrumbs.append(bc)
     }
 
     let displayer = document.getElementById('display')
@@ -163,7 +146,7 @@ async function innerDBClicked(e, name, key) {
         view_btn.addEventListener('click', async () => {
             const d = await fetch(`/data?db=${mydb}&table=${Object.values(data[i])[0]}`, {method: 'get'})
             const res = await d.json()
-            renderTables(res.data, res.columns, mydb, Object.values(data[i])[0])
+            renderRowsTable(res.data, res.columns, mydb, Object.values(data[i])[0])
         })
 
 
@@ -216,24 +199,9 @@ async function innerDBClicked(e, name, key) {
 
 
 // render row tables
-function renderTables(data, colu, db, tb) {
+function renderRowsTable(data, colu, db, tb) {
     let displayer = document.getElementById('display')
     displayer.innerHTML = ''
-
-    let breadcrumbs = document.getElementById('breadcrumbs')
-    let prev_bc = document.getElementById("bcc_" + tb)
-
-    if (!prev_bc) {
-        let bc = document.createElement('button')
-        bc.innerText = "> " + tb
-        bc.id = "bcc_" + tb
-        bc.classList.add('bc_tb')
-
-        bc.addEventListener('click', (e) => {
-            renderTables(data, colu, db, tb)
-        })
-        breadcrumbs.append(bc)
-    }
 
     let divs = document.createElement('div')
     divs.classList.add('flex', 'justify-between', 'items-center', 'tables_header')
@@ -260,13 +228,11 @@ function renderTables(data, colu, db, tb) {
     delete_db_btn.type = 'button'
     delete_db_btn.style.backgroundColor = '#ec4899'
 
-    console.log(db, tb)
     delete_db_btn.addEventListener('click', async e => {
         let d = new FormData()
         d.append('database', db)
         d.append('table', tb)
 
-        console.log(db, tb)
         let r = await fetch('/delete/table', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: d})
         let f = await r.json();
         if (r.status == 200) {
@@ -303,7 +269,6 @@ function renderTables(data, colu, db, tb) {
         da.append('table', tb)
         da.append('db', db)
         da.append('id', data[i]['id'])
-        console.log(db, tb)
 
         del_btn.addEventListener('click', async (e) => {
             await fetch('/delete/row', {
@@ -399,7 +364,7 @@ function renderForm(colu, data, db, tb) {
         if (dr.status == 200) {
             form.style.display = 'none'
             let f = await dr.json()
-            renderTables(f.data, f.columns, db, tb)
+            renderRowsTable(f.data, f.columns, db, tb)
         } else {
             er.style.display = 'flex'
         }
@@ -412,7 +377,6 @@ let add_column_btn = document.getElementById('add_column_btn')
 let _column = document.getElementById('each_column')
 let columns = document.getElementById('all_columns')
 let columns_list = []
-
 add_column_btn.addEventListener('click', (e) => {
     let id = Math.random() * 10
     let copy = _column.cloneNode(true)
@@ -436,7 +400,6 @@ add_column_btn.addEventListener('click', (e) => {
         ele[i].value = ''
     }
 })
-
 
 // close create table modal
 let close_table_modal = document.getElementById('close_table_modal')
@@ -474,7 +437,7 @@ async function getDbsApi() {
 
         element.append(pa)
         element.append(pb)
-        element.addEventListener('click', (e) => innerDBClicked(e, item['Database'], i))
+        element.addEventListener('click', (e) => getTables(e, item['Database'], i))
 
         container.append(element)
 
@@ -492,7 +455,7 @@ async function getDbsApi() {
         sb_p.classList.add('db_listed')
         sb_p.id = "db_" + i
         sb_p.innerText = item['Database']
-        sb_p.addEventListener('click', (e) => innerDBClicked(e, item['Database'], i))
+        sb_p.addEventListener('click', (e) => getTables(e, item['Database'], i))
 
         let sb_kids = document.createElement('div')
         sb_kids.classList.add('table_listed')
@@ -505,28 +468,9 @@ async function getDbsApi() {
         sb.append(sb_container)
 
         sb_drop.addEventListener('click', (e) => {
-            let el = e.target
-            if (el.classList.contains('active')) {
-                el.classList.remove('text-green', 'active')
-                el.innerText = "+"
-                sb_kids.style.display = 'none'
-            } else {
-                el.classList.add('text-green', 'active')
-                el.innerText = "-"
-                sb_kids.style.display = 'flex'
-                fetchForSideBar(i, item['Database'], sb_kids)
-            }
+            sidebarDropDownClicked(e, i, item['Database'])
         })
 
     })
     displayer.append(container)
-
-    // clean breadcrumbs
-    let bc = document.getElementById('breadcrumbs')
-    bc.innerHTML = '<button class="border p-2 bg-slate-500 uppercase" onclick="getDbsApi()">Databases</a>'
 }
-
-
-
-
-

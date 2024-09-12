@@ -85,20 +85,7 @@ button {
     gap: 5px;
 }
 
-#breadcrumbs button {
-    font-size: 10px;
-}
 
-#breadcrumbs button:nth-child(2) {
-    background-color: #94a3b8;
-}
-
-#breadcrumbs button:nth-child(3) {
-    background-color: #cbd5e1;
-    color: #475569;
-}
-
-/* bg-fuchsia-100 flex flex-col gap-1 cursor-pointer font-bold text text-slate-800 p-5  duration-300 border-2 border-fuchsia-100 hover:border-green-300 hover:bg-transparent */
 .db_card {
     display: flex;
     flex-direction: column;

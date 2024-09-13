@@ -85,6 +85,7 @@ async function getTables(e, name, key) {
                 document.getElementById('create_table_modal').style.display = 'none'
                 document.getElementById('create_table_error').style.display = 'none'
                 // call create table row
+                getTables(e, e.target.db.value, key)
             } else {
                 document.getElementById('create_table_error').style.display = 'flex'
                 document.getElementById('create_table_error').innerText = await r.json()

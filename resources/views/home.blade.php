@@ -47,6 +47,19 @@
                 </div>
             </nav>
             <div id="displayer" class="">
+                <form id="create_database_form" action="/create/database" method="post" class="w-full p-0">
+                    @csrf
+                    <div class="flex gap-2 items-center w-full">
+                        <input type="text" name="name" value="{{ old('name') }}" placeholder="database name"
+                            class="py-2 px-5  border border-slate-200">
+                        <button type="submit"
+                            class="py-2 px-5  border text-slate-800 uppercase text-[12px] border-slate-200 bg-green-300">Create
+                            Database</button>
+                    </div>
+                    @foreach ($errors->all() as $error)
+                        <p class="text-rose-500 text-sm">{{ $error }}</p>
+                    @endforeach
+                </form>
                 <div id="display" class="">
                     <div class="flex flex-wrap gap-3">
                         @foreach ($dbs as $key => $item)
@@ -60,19 +73,6 @@
                         @endforeach
                     </div>
                 </div>
-                <form id="create_database_form" action="/create/database" method="post" class="w-full">
-                    @csrf
-                    <div class="flex gap-2 items-center w-full">
-                        <input type="text" name="name" value="{{ old('name') }}" placeholder="database name"
-                            class="py-2 px-5  border border-slate-200">
-                        <button type="submit"
-                            class="py-2 px-5  border text-slate-800 uppercase text-[12px] border-slate-200 bg-green-300">Create
-                            Database</button>
-                    </div>
-                    @foreach ($errors->all() as $error)
-                        <p class="text-rose-500 text-sm">{{ $error }}</p>
-                    @endforeach
-                </form>
             </div>
             <div class="">
                 <form id="create_table_modal"

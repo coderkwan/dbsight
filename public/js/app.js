@@ -40,6 +40,8 @@ async function getTables(e, name, key) {
     let dd = await fetch(`/data/tables?database=${name}`, {method: "get"})
     let data = await dd.json()
 
+    document.getElementById('create_database_form').style.display = "none"
+
     let listed = document.getElementsByClassName('db_listed')
     for (let i = 0; i < listed.length; i++) {
         listed[i].style.backgroundColor = ""
@@ -202,6 +204,8 @@ async function getTables(e, name, key) {
 function renderRowsTable(data, colu, db, tb, key) {
     let displayer = document.getElementById('display')
     displayer.innerHTML = ''
+
+    document.getElementById('create_database_form').style.display = "none"
 
     let listed = document.getElementsByClassName('db_listed')
     for (let i = 0; i < listed.length; i++) {
@@ -422,6 +426,8 @@ close_table_modal.addEventListener('click', (e) => {
 async function getDbsApi() {
     let d = await fetch('/home', {method: 'get'})
     const res = await d.json()
+
+    document.getElementById('create_database_form').style.display = "flex"
 
     //render dbs
     let displayer = document.getElementById('display')

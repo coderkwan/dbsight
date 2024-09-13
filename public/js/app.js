@@ -2,10 +2,10 @@
 let prev_table = '';
 let token = document.querySelector('input[name="_token"]').getAttribute('value')
 
-async function getRows(db, tb) {
+async function getRows(db, tb, key) {
     const d = await fetch(`/data?db=${db}&table=${tb}`, {method: 'get'})
     const res = await d.json()
-    renderRowsTable(res.data, res.columns, db, tb)
+    renderRowsTable(res.data, res.columns, db, tb, key)
 }
 
 async function sidebarDropDownClicked(e, key, name) {
@@ -27,10 +27,10 @@ async function sidebarDropDownClicked(e, key, name) {
         for (let i = 0; i < data.length; i++) {
             let d = document.createElement('div')
             d.id = key + "_" + i
-            d.classList.add('py-1', 'p-2', 'border', 'cursor-pointer')
+            d.classList.add("side_tables")
             let tab = data[i][`Tables_in_${name}`]
             d.innerText = tab
-            d.addEventListener('click', () => getRows(name, tab))
+            d.addEventListener('click', () => getRows(name, tab, key))
             p.append(d)
         }
     }
@@ -44,9 +44,9 @@ async function getTables(e, name, key) {
     for (let i = 0; i < listed.length; i++) {
         listed[i].style.backgroundColor = ""
     }
-    if (e.target.classList.contains('db_listed')) {
-        e.target.style.backgroundColor = "#86efac"
-    }
+
+    let db_clicked = document.getElementById('db_' + key)
+    db_clicked.style.backgroundColor = "#86efac"
 
     let bc_tb = document.getElementsByClassName('bc_tb')
     for (let i = 0; i < bc_tb.length; i++) {
@@ -146,7 +146,7 @@ async function getTables(e, name, key) {
         view_btn.addEventListener('click', async () => {
             const d = await fetch(`/data?db=${mydb}&table=${Object.values(data[i])[0]}`, {method: 'get'})
             const res = await d.json()
-            renderRowsTable(res.data, res.columns, mydb, Object.values(data[i])[0])
+            renderRowsTable(res.data, res.columns, mydb, Object.values(data[i])[0], key)
         })
 
 
@@ -199,9 +199,17 @@ async function getTables(e, name, key) {
 
 
 // render row tables
-function renderRowsTable(data, colu, db, tb) {
+function renderRowsTable(data, colu, db, tb, key) {
     let displayer = document.getElementById('display')
     displayer.innerHTML = ''
+
+    let listed = document.getElementsByClassName('db_listed')
+    for (let i = 0; i < listed.length; i++) {
+        listed[i].style.backgroundColor = ""
+    }
+
+    let db_clicked = document.getElementById('db_' + key)
+    db_clicked.style.backgroundColor = "#86efac"
 
     let divs = document.createElement('div')
     divs.classList.add('flex', 'justify-between', 'items-center', 'tables_header')
@@ -298,7 +306,7 @@ function renderRowsTable(data, colu, db, tb) {
     table.append(table_h)
     table.append(table_b)
     displayer.append(table)
-    displayer.append(renderForm(colu, data, db, tb))
+    displayer.append(renderForm(colu, data, db, tb, key))
 
     if (data.length == 0) {
         let ee = document.createElement('p')
@@ -309,7 +317,7 @@ function renderRowsTable(data, colu, db, tb) {
 }
 
 // render create row form
-function renderForm(colu, data, db, tb) {
+function renderForm(colu, data, db, tb, key) {
     let form = document.createElement('form')
     form.id = 'create_row_modal'
     form.classList.add('absolute', 'bg-white', 'top-5', 'mx-auto', 'left-0',
@@ -364,7 +372,7 @@ function renderForm(colu, data, db, tb) {
         if (dr.status == 200) {
             form.style.display = 'none'
             let f = await dr.json()
-            renderRowsTable(f.data, f.columns, db, tb)
+            renderRowsTable(f.data, f.columns, db, tb, key)
         } else {
             er.style.display = 'flex'
         }

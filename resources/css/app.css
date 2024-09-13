@@ -115,19 +115,19 @@ button {
 }
 
 .side_container {
-    border: 1px solid;
+    margin-bottom: 12px;
 }
 
 .side_wrapper {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 10px;
 }
 
 .side_drop {
     cursor: pointer;
     border: 1px solid;
-    padding: 5px;
+    padding: 10px;
     height: 30px;
     width: 30px;
     display: flex;
@@ -136,19 +136,27 @@ button {
 }
 
 .db_listed {
+    border: 1px solid;
     display: flex;
-    justify-content: center;
     align-items: center;
     cursor: pointer;
-    padding: 10px;
+    padding: 5px;
     width: 100%;
 }
 
 .table_listed {
-    margin-left: 40px;
+    margin: 0px 0px 10px 40px;
     display: flex;
     flex-direction: column;
     gap: 5px;
-    background-color: white;
     font-size: 10px;
+}
+
+.side_tables {
+    background-color: white;
+    border: 1px solid #db2777;
+    padding: 2px 5px;
+    margin: 2px 0px;
+    cursor: pointer;
+    overflow: hidden;
 }

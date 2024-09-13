@@ -21,7 +21,7 @@ class SetDynamicDbConnection
             Config::set('database.connections.dynamic_db', [
                 'driver' => $dbDetails->driver,
                 'host' => $dbDetails->host,
-                'database' => $dbDetails->database,
+                'database' => null,
                 'username' => $dbDetails->username,
                 'password' => $dbDetails->password,
             ]);

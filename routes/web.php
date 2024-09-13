@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
-    $databases = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys');");
+    $databases = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA");
     foreach ($databases as $db) {
         $dbName = $db->SCHEMA_NAME;
         $sizeQuery = "SELECT
@@ -38,7 +38,7 @@ Route::get('/', function () {
 })->name('home')->middleware(SetDynamicDbConnection::class);
 
 Route::get('/home', function () {
-    $databases = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'sys');");
+    $databases = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA");
     foreach ($databases as $db) {
         $dbName = $db->SCHEMA_NAME;
         $sizeQuery = "SELECT
@@ -204,7 +204,7 @@ Route::post('/login', function (Request $request) {
     $dbDetails = [
         'host' => $request->input('host'),
         'driver' => $request->input('driver'),
-        'database' => $request->input('database'),
+        /* 'database' => $request->input('database'), */
         'username' => $request->input('user'),
         'password' => $request->input('password'),
     ];

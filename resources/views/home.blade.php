@@ -99,7 +99,7 @@
                                 <label for="">Type</label>
                                 <select name="type[]" class="p-2">
                                     <option value="INT">INT</option>
-                                    <option value="VARCHAR">VARCHAR</option>
+                                    <option value="VARCHAR(600)">VARCHAR</option>
                                     <option value="TEXT">TEXT</option>
                                     <option value="DATE">DATE</option>
                                     <option value="DATETIME">DATETIME</option>
@@ -125,10 +125,21 @@
                                 </select>
                             </div>
                             <div class="flex flex-col">
-                                <label>NUll</label>
+                                <label>Primary Key</label>
+                                <input type="checkbox" name="primary" />
+                            </div>
+                            <div class="flex flex-col">
+                                <label>NULL</label>
                                 <select name="NULL[]" class="p-2">
-                                    <option value="yes">Yes</option>
-                                    <option value="no">No</option>
+                                    <option value="NULL">Yes</option>
+                                    <option value="NOT NULL">No</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col">
+                                <label>Unique</label>
+                                <select name="UNIQUE[]" class="p-2">
+                                    <option value="NO">No</option>
+                                    <option value="YES">Yes</option>
                                 </select>
                             </div>
                             <div class="flex flex-col">

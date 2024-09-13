@@ -24,9 +24,9 @@
         <label for="">Host</label>
         <input type="text" name="host" placeholder="localhost" required value="{{ old('host') }}"
             class="border px-3 py-1">
-        <label for="">Database</label>
-        <input type="text" name="database" placeholder="maindb" required value="{{ old('database') }}"
-            class="border px-3 py-1">
+        {{-- <label for="">Database</label> --}}
+        {{-- <input type="text" name="database" placeholder="maindb" required value="{{ old('database') }}" --}}
+        {{--     class="border px-3 py-1"> --}}
         <label for="">Username</label>
         <input type="text" name="user" placeholder="admin" required value="{{ old('username') }}"
             class="border px-3 py-1">

@@ -139,13 +139,13 @@ Route::post('/create/row', function (Request $req) {
 
 Route::post('/create/database', function (Request $req) {
     $data = $req->input();
-    $name = str_replace(" ", "_", $data['name']);
+    $name = trim($data['name']);
 
     try {
-        $cr = DB::connection('dynamic_db')->select("CREATE DATABASE  `" . $name . "`");
+        $cr = DB::connection('dynamic_db')->select("CREATE DATABASE IF NOT EXISTS `" . $name . "`");
         return redirect('/');
     } catch (\Throwable $th) {
-        return back()->withErrors("Can't create databse, choose a different name!")->withInput();
+        return back()->withErrors($th->getMessage())->withInput();
     }
 })->middleware(SetDynamicDbConnection::class);
 

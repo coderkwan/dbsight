@@ -156,7 +156,23 @@ Route::post('/create/table', function (Request $req) {
     $col_len = count($data['column']);
 
     foreach ($data['column'] as $key => $value) {
-        $text = $text . $value . " " . $data['type'][$key];
+
+        $text = $text . $value;
+
+        // type
+        if ($data['SIZE'][$key] != null && strlen(trim($data['SIZE'][$key])) > 0) {
+            $text = $text . " " . $data['type'][$key] . " (" . $data['SIZE'][$key] . ") ";
+        } else {
+            $text = $text . " " . $data['type'][$key];
+        }
+
+        // other options
+        if ($data['DEFAULT'][$key] != null && strlen(trim($data['DEFAULT'][$key])) > 0) {
+            $text = $text . " " . $data['NULL'][$key] . " " . $data['UNIQUE'][$key] . " "  . $data['AI'][$key] . " DEFAULT " . $data['DEFAULT'][$key] . " " . $data['PRIMARY'][$key];
+        } else {
+            $text = $text . " " . $data['NULL'][$key] . " " . $data['UNIQUE'][$key] . " "  . $data['AI'][$key] . " " . $data['PRIMARY'][$key];
+        }
+
         if ($key != $col_len - 1) {
             $text = $text . ", ";
         }
@@ -166,7 +182,7 @@ Route::post('/create/table', function (Request $req) {
         DB::connection('dynamic_db')->select("CREATE TABLE `" . $data['db'] . "`.`" . $data['name'] . "` (" . $text . ")");
         return response()->json('done baby');
     } catch (\Throwable $th) {
-        return response()->json('Failed create the table, make sure the name is unique and your columns include an id column', 400);
+        return response()->json($th->getMessage(), 401);
     }
 })->middleware(SetDynamicDbConnection::class);
 

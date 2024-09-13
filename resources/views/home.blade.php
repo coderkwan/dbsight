@@ -75,30 +75,28 @@
                 </div>
             </div>
             <div class="">
-                <form id="create_table_modal"
-                    class="absolute top-5 mx-auto left-0 right-0 border-indigo-800 shadow-xl border-2 flex justify-center hidden bg-white">
+                <form id="create_table_modal">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold">Create New Table</h3>
                         <button type="button" id="close_table_modal" class="bg-red-500 w-fit -full pointer">X</button>
                     </div>
-                    <p id="create_table_error" class="text-red-500 hidden"> Cannot create table, Please make sure
-                        you use a unique name and you columns must contain an 'id' column.</p>
+                    <p id="create_table_error" class="text-red-500 hidden"></p>
                     <input type="text" name="db" id="create_table_db" required value="{{ old('db') }}"
                         placeholder="table db" hidden>
                     <input type="text" name="name" required value="{{ old('name') }}" placeholder="table name"
                         class="p-2 border">
                     <h3 class="text-xl">Columns</h3>
-                    <div class="flex gap-4 flex-col" id="all_columns">
-                        <div class="flex gap-5 items-end" id="each_column">
+                    <div class="flex gap-5 flex-col" id="all_columns">
+                        <div class="flex gap-5 items-end each_column" id="each_column">
                             <div class="flex flex-col">
                                 <label for="">Name</label>
                                 <input type="text" name="column[]" required value="id" placeholder="Column name"
-                                    class="p-2 border">
+                                    class="p-1 border">
                             </div>
                             <div class="flex flex-col">
                                 <label for="">Type</label>
-                                <select name="type[]" class="p-2">
-                                    <option value="INT">INT</option>
+                                <select name="type[]" class="p-1">
+                                    <option value="INT" selected>INT</option>
                                     <option value="VARCHAR(600)">VARCHAR</option>
                                     <option value="TEXT">TEXT</option>
                                     <option value="DATE">DATE</option>
@@ -125,26 +123,40 @@
                                 </select>
                             </div>
                             <div class="flex flex-col">
-                                <label>Primary Key</label>
-                                <input type="checkbox" name="primary" />
+                                <label>Size/Values</label>
+                                <input type="text" name="SIZE[]" class="p-1 border" />
+                            </div>
+                            <div class="flex flex-col">
+                                <label>Primary</label>
+                                <select name="PRIMARY[]" class="p-1">
+                                    <option value="">NO</option>
+                                    <option value="PRIMARY KEY" selected>YES</option>
+                                </select>
                             </div>
                             <div class="flex flex-col">
                                 <label>NULL</label>
-                                <select name="NULL[]" class="p-2">
-                                    <option value="NULL">Yes</option>
+                                <select name="NULL[]" class="p-1">
                                     <option value="NOT NULL">No</option>
+                                    <option value="">Yes</option>
                                 </select>
                             </div>
                             <div class="flex flex-col">
                                 <label>Unique</label>
-                                <select name="UNIQUE[]" class="p-2">
-                                    <option value="NO">No</option>
-                                    <option value="YES">Yes</option>
+                                <select name="UNIQUE[]" class="p-1">
+                                    <option value="">No</option>
+                                    <option value="UNIQUE" selected>Yes</option>
                                 </select>
                             </div>
                             <div class="flex flex-col">
-                                <label>Default Value</label>
-                                <input name="default[]" type="text" class="p-2 border" />
+                                <label>AI</label>
+                                <select name="AI[]" class="p-1">
+                                    <option value="">No</option>
+                                    <option value="AUTO_INCREMENT" selected>Yes</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col">
+                                <label>Default</label>
+                                <input name="DEFAULT[]" type="text" class="p-1 border" />
                             </div>
                         </div>
                     </div>

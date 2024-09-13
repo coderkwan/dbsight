@@ -160,3 +160,31 @@ button {
     cursor: pointer;
     overflow: hidden;
 }
+
+#create_table_modal {
+    max-width: 800px;
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    background-color: white;
+    box-shadow: 1px 1px 92px 23px #9e9fad;
+}
+
+#create_table_modal input {
+    width: 100%;
+}
+
+.each_column {
+    font-size: 13px;
+}
+
+.each_column label {
+    font-size: 10px;
+}
+
+.each_column button {
+    background-color: tomato;
+}

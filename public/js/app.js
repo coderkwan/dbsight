@@ -87,6 +87,7 @@ async function getTables(e, name, key) {
                 // call create table row
             } else {
                 document.getElementById('create_table_error').style.display = 'flex'
+                document.getElementById('create_table_error').innerText = await r.json()
             }
         })
     })
@@ -407,9 +408,13 @@ add_column_btn.addEventListener('click', (e) => {
     columns.append(copy)
 
     let ele = document.getElementById(id).getElementsByTagName('input')
+    let sel = document.getElementById(id).getElementsByTagName('option')
 
     for (let i = 0; ele.length > i; i++) {
         ele[i].value = ''
+    }
+    for (let i = 0; sel.length > i; i++) {
+        sel[i].selected = false
     }
 })
 

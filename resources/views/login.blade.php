@@ -23,6 +23,9 @@
         <label for="">Host</label>
         <input type="text" name="host" placeholder="localhost" required value="{{ old('host') }}"
             class="border px-3 py-1">
+        <label for="">Port</label>
+        <input type="text" name="port" placeholder="3306" required value="{{ old('port') }}"
+            class="border px-3 py-1">
         {{-- <label for="">Database</label> --}}
         {{-- <input type="text" name="database" placeholder="maindb" required value="{{ old('database') }}" --}}
         {{--     class="border px-3 py-1"> --}}
@@ -32,6 +35,9 @@
         <label for="">Password</label>
         <input type="password" name="password" placeholder="1234" required value="{{ old('password') }}"
             class="border px-3 py-1">
+        @foreach ($errors->all() as $err)
+            <p class="text-rose-400 my-2">{{ $err }}</p>
+        @endforeach
         <button type="submit">Login</button>
     </form>
 </body>

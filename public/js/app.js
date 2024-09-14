@@ -5,7 +5,7 @@ let token = document.querySelector('input[name="_token"]').getAttribute('value')
 async function getRows(db, tb, key) {
     const d = await fetch(`/data?db=${db}&table=${tb}`, {method: 'get'})
     const res = await d.json()
-    renderRowsTable(res.data, res.columns, db, tb, key)
+    renderRowsTable(res.data, res.columns, db, tb, key, res.columns_full)
 }
 
 async function sidebarDropDownClicked(e, key, name) {
@@ -76,6 +76,7 @@ async function getTables(e, name, key) {
     create_t_btn.addEventListener('click', e => {
         document.getElementById('create_table_modal').style.display = 'flex'
         document.getElementById('create_table_db').value = mydb
+        document.getElementById('create_table_title').innerText = 'Create a new table in the ' + mydb + " database"
 
         document.getElementById('create_table_modal').addEventListener('submit', async e => {
             e.preventDefault()
@@ -95,6 +96,40 @@ async function getTables(e, name, key) {
 
     divs.append(create_t_btn)
 
+    let rename_btn = document.createElement('button')
+    rename_btn.innerText = 'Rename Database'
+    rename_btn.type = 'button'
+    rename_btn.style.backgroundColor = '#94a3b8'
+
+    rename_btn.addEventListener('click', async e => {
+        document.getElementById('rename_databese').style.display = 'flex'
+        let formm = document.getElementById('rename_databese_form')
+        formm.elements['name'].value = mydb
+        formm.elements['old_name'].value = mydb
+        formm.addEventListener('submit', async e => {
+            e.preventDefault()
+            let d = new FormData(formm)
+            let r = await fetch('database/rename', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: d})
+            let f = await r.json();
+            if (r.status != 200) {
+                let gb = document.getElementById('rename_error')
+                gb.style.display = 'flex'
+                gb.innerText = f
+                setTimeout(() => {
+                    gb.style.display = 'none'
+                    gb.innerText = ''
+                }, 5000)
+            } else {
+                window.location.href = '/'
+            }
+        })
+
+
+        document.getElementById('close_rename_modal').addEventListener('click', (e) => {
+            document.getElementById('rename_databese').style.display = 'none'
+        })
+    })
+
     let delete_db_btn = document.createElement('button')
     delete_db_btn.innerText = 'Delete Database'
     delete_db_btn.type = 'button'
@@ -108,9 +143,18 @@ async function getTables(e, name, key) {
         let f = await r.json();
         if (r.status == 200) {
             window.location.href = "/"
+        } else {
+            let gb = document.getElementById('global_error')
+            gb.style.display = 'flex'
+            gb.innerText = f
+            setTimeout(() => {
+                gb.style.display = 'none'
+                gb.innerText = ''
+            }, 5000)
         }
     })
 
+    divs.append(rename_btn)
     divs.append(delete_db_btn)
     displayer.append(divs)
 
@@ -136,12 +180,6 @@ async function getTables(e, name, key) {
         view_btn.innerText = 'View'
         td_view.append(view_btn)
 
-        let td_edit = document.createElement("td")
-        let edit_btn = document.createElement('button')
-        edit_btn.innerText = 'Edit'
-        edit_btn.classList.add('edit_row')
-        td_edit.append(edit_btn)
-
         let td_delete = document.createElement("td")
         let del_btn = document.createElement('button')
         del_btn.classList.add('remove_row')
@@ -150,7 +188,7 @@ async function getTables(e, name, key) {
         view_btn.addEventListener('click', async () => {
             const d = await fetch(`/data?db=${mydb}&table=${Object.values(data[i])[0]}`, {method: 'get'})
             const res = await d.json()
-            renderRowsTable(res.data, res.columns, mydb, Object.values(data[i])[0], key)
+            renderRowsTable(res.data, res.columns, mydb, Object.values(data[i])[0], key, res.columns_full)
         })
 
 
@@ -166,9 +204,15 @@ async function getTables(e, name, key) {
                 },
             })
             if (dt.status == 200) {
-                let peer = document.getElementById(key + `_` + i)
-                peer ? peer.remove() : null
-                tr.remove()
+                getTables(e, mydb, key)
+            } else {
+                let gb = document.getElementById('global_error')
+                gb.style.display = 'flex'
+                gb.innerText = await dt.json()
+                setTimeout(() => {
+                    gb.style.display = 'none'
+                    gb.innerText = ''
+                }, 5000)
             }
         })
 
@@ -181,7 +225,6 @@ async function getTables(e, name, key) {
         }
 
         tr.append(td_view)
-        tr.append(td_edit)
         tr.append(td_delete)
 
         table_b.append(tr)
@@ -203,7 +246,7 @@ async function getTables(e, name, key) {
 
 
 // render row tables
-function renderRowsTable(data, colu, db, tb, key) {
+function renderRowsTable(data, colu, db, tb, key, columns_full) {
     let displayer = document.getElementById('display')
     displayer.innerHTML = ''
 
@@ -225,6 +268,7 @@ function renderRowsTable(data, colu, db, tb, key) {
     header.innerText = "Rows of the " + tb + " table"
     divs.append(header)
 
+
     let create_t_btn = document.createElement('button')
     create_t_btn.innerText = 'Create New Row'
     create_t_btn.style.backgroundColor = '#86efac'
@@ -236,6 +280,39 @@ function renderRowsTable(data, colu, db, tb, key) {
     })
 
     divs.append(create_t_btn)
+
+    let edit_table_btn = document.createElement('button')
+    edit_table_btn.innerText = 'Edit Table'
+    edit_table_btn.style.backgroundColor = '#94a3b8'
+    edit_table_btn.style.color = '#f1f5f9'
+    edit_table_btn.type = 'button'
+
+    let edit_tab = document.getElementById('edit_table_modal')
+    edit_table_btn.addEventListener('click', e => {
+        edit_tab.style.display = 'flex'
+    })
+
+    let col_cont = edit_tab.querySelector('#all_columns')
+    let mode = edit_tab.querySelector('#each_column')
+    mode.style.display = 'none'
+
+    edit_tab.querySelector('input[name="name"]').value = tb
+    edit_tab.querySelector('input[name="old_name"]').value = tb
+
+    for (let z in columns_full) {
+        let new_mode = mode.cloneNode(true)
+        new_mode.style.display = 'flex'
+        new_mode.querySelector('input[name="column[]"]').value = z
+        new_mode.querySelector('input[name="type[]"]').value = columns_full[z]['Type']
+        new_mode.querySelector('input[name="DEFAULT[]"]').value = columns_full[z]['Default']
+        new_mode.querySelector('select[name="PRIMARY[]"]').value = columns_full[z]['Key'] == 'PRI' ? 'PRIMARY KEY' : ""
+        new_mode.querySelector('select[name="NULL[]"]').value = columns_full[z]['Null'] == 'No' ? 'NOT NULL' : ""
+        new_mode.querySelector('select[name="AI[]"]').value = columns_full[z]['Extra'] == 'auto_increment' ? 'AUTO_INCREMENT' : ""
+        new_mode.querySelector('select[name="UNIQUE[]"]').value = columns_full[z]['Unique'] == true ? 'UNIQUE' : ""
+        col_cont.append(new_mode)
+    }
+
+    divs.append(edit_table_btn)
 
     let delete_db_btn = document.createElement('button')
     delete_db_btn.innerText = 'Delete Table'
@@ -250,7 +327,15 @@ function renderRowsTable(data, colu, db, tb, key) {
         let r = await fetch('/delete/table', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: d})
         let f = await r.json();
         if (r.status == 200) {
-            window.location.href = "/"
+            getTables(e, db, key)
+        } else {
+            let gb = document.getElementById('global_error')
+            gb.style.display = 'flex'
+            gb.innerText = f
+            setTimeout(() => {
+                gb.style.display = 'none'
+                gb.innerText = ''
+            }, 5000)
         }
     })
 
@@ -275,9 +360,51 @@ function renderRowsTable(data, colu, db, tb, key) {
         edit_btn.innerText = 'Edit'
         td_edit.append(edit_btn)
 
+        td_edit.addEventListener('click', e => {
+            let editor = renderForm(colu, tb, 'Edit')
+            displayer.append(editor)
+            editor.style.display = 'flex'
+
+            for (let y in data[i]) {
+                editor.elements[`${y}`].value = data[i][y]
+                let oll = document.createElement('input')
+                oll.name = "all_old_" + editor.elements[`${y}`].name
+                oll.value = data[i][y]
+                oll.hidden = true
+                editor.append(oll)
+            }
+
+            editor.addEventListener('submit', async (e) => {
+                e.preventDefault()
+                let da = new FormData(editor)
+                da.append('x_table_', tb)
+                da.append('x_db_', db)
+
+                let dr = await fetch('edit/row', {
+                    method: "POST", body: da,
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    },
+                })
+                if (dr.status == 200) {
+                    editor.style.display = 'none'
+                    getRows(db, tb, key)
+                } else {
+                    let er = editor.querySelector('#create_row_error')
+                    er.style.display = 'flex'
+                    let doner = await dr.json()
+                    er.innerText = doner
+                }
+            })
+
+            // populate data
+            // modify
+        })
+
         let td_delete = document.createElement("td")
         let del_btn = document.createElement('button')
         del_btn.innerText = 'Delete'
+        del_btn.style.backgroundColor = 'black'
 
         let da = new FormData()
         da.append('table', tb)
@@ -285,17 +412,22 @@ function renderRowsTable(data, colu, db, tb, key) {
         da.append('id', data[i]['id'])
 
         del_btn.addEventListener('click', async (e) => {
-            await fetch('/delete/row', {
+            let de = await fetch('/delete/row', {
                 method: "POST", body: da,
                 headers: {
                     'X-CSRF-TOKEN': token
                 },
             })
-            tr.remove()
+            if (de.status == 200) {
+                getRows(db, tb, key)
+
+            } else {
+                let des = await de.json()
+                console.log(des)
+            }
         })
 
         td_delete.append(del_btn)
-
 
         for (let b in data[i]) {
             let td = document.createElement("td")
@@ -312,7 +444,32 @@ function renderRowsTable(data, colu, db, tb, key) {
     table.append(table_h)
     table.append(table_b)
     displayer.append(table)
-    displayer.append(renderForm(colu, data, db, tb, key))
+
+    let foorm = renderForm(colu, tb, 'Create')
+    displayer.append(foorm)
+
+    foorm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        let da = new FormData(foorm)
+        da.append('x_table_', tb)
+        da.append('x_db_', db)
+
+        let dr = await fetch('create/row', {
+            method: "POST", body: da,
+            headers: {
+                'X-CSRF-TOKEN': token
+            },
+        })
+        if (dr.status == 200) {
+            foorm.style.display = 'none'
+            getRows(db, tb, key)
+        } else {
+            let er = document.getElementById('create_row_error')
+            er.style.display = 'flex'
+            er.innerText = await dr.json()
+        }
+    })
+
 
     if (data.length == 0) {
         let ee = document.createElement('p')
@@ -323,30 +480,36 @@ function renderRowsTable(data, colu, db, tb, key) {
 }
 
 // render create row form
-function renderForm(colu, data, db, tb, key) {
+function renderForm(colu, tb, what_for) {
     let form = document.createElement('form')
     form.id = 'create_row_modal'
-    form.classList.add('absolute', 'bg-white', 'top-5', 'mx-auto', 'left-0',
-        'right-0', 'border-indigo-800', 'shadow-xl', 'border-2',
-        'flex', 'justify-center', 'hidden')
+    form.style.display = 'none'
 
     let x = document.createElement('button')
+    let xp = document.createElement('h4')
+    xp.innerText = what_for + ' row in the ' + tb + ' table'
+    xp.classList.add('font-bold')
     x.innerText = 'X'
-    x.classList.add('bg-red-500', 'p-3', 'w-fit', 'justify-self-end')
+    x.classList.add('bg-red-500', 'p-3', 'w-fit', 'rounded', 'align-self-end')
     x.type = 'button'
     x.id = 'close_row_modal'
     let er = document.createElement('p')
-    er.innerText = 'Failed to create row Please make sure the values have the corect type.'
-    er.classList.add('text-red-300', 'hidden')
+    er.classList.add('hidden')
+    er.id = 'create_row_error'
+    er.style.color = 'tomato'
     x.addEventListener('click', (e) => {
         form.style.display = 'none'
         er.style.display = 'none'
     })
-    form.append(x)
+    let xdiv = document.createElement('div')
+    xdiv.classList.add('flex', 'justify-between', 'items-center')
+    xdiv.append(xp)
+    xdiv.append(x)
+    form.append(xdiv)
     form.append(er)
     for (let i in colu) {
         let d = document.createElement("div")
-        d.classList.add('form_element')
+        d.classList.add('each_column')
         let label = document.createElement("label")
         label.innerText = i + " - " + colu[i]
         let input = document.createElement("input")
@@ -360,29 +523,9 @@ function renderForm(colu, data, db, tb, key) {
 
     let button = document.createElement('button')
     button.type = 'submit'
-    button.innerText = 'Create'
+    button.innerText = what_for
     form.append(button)
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault()
-        let da = new FormData(form)
-        da.append('x_table_', tb)
-        da.append('x_db_', db)
-
-        let dr = await fetch('/create/row', {
-            method: "POST", body: da,
-            headers: {
-                'X-CSRF-TOKEN': token
-            },
-        })
-        if (dr.status == 200) {
-            form.style.display = 'none'
-            let f = await dr.json()
-            renderRowsTable(f.data, f.columns, db, tb, key)
-        } else {
-            er.style.display = 'flex'
-        }
-    })
     return form
 }
 
@@ -428,6 +571,15 @@ close_table_modal.addEventListener('click', (e) => {
 
 })
 
+// close edit table modal
+let close_edit_table_modal = document.getElementById('close_edit_table_modal')
+close_edit_table_modal.addEventListener('click', (e) => {
+    e.target.parentNode.parentNode.style.display = 'none'
+    document.getElementById('edit_table_error').style.display = 'none'
+    document.getElementById('edit_table_db').removeEventListener('submit', () => {return })
+
+})
+
 
 async function getDbsApi() {
     let d = await fetch('/home', {method: 'get'})
@@ -453,10 +605,8 @@ async function getDbsApi() {
         let pa = document.createElement('p')
         let pb = document.createElement('p')
         pa.innerText = "Tables: " + item['table_count']
-        pb.innerText = "Database size: " + (item['database_size'] / 1024 / 1024).toFixed(2) + " MBs"
 
         element.append(pa)
-        element.append(pb)
         element.addEventListener('click', (e) => getTables(e, item['Database'], i))
 
         container.append(element)
@@ -493,4 +643,8 @@ async function getDbsApi() {
 
     })
     displayer.append(container)
+}
+
+function createSql() {
+    document.getElementById('raw_sql').style.display = 'flex'
 }

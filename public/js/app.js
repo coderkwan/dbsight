@@ -243,7 +243,26 @@ async function getTables(e, name, key) {
     }
 
 }
+let model = document.getElementById('edit_each_column')
+let add_col = document.getElementById('add_column_on_edit')
+add_col.addEventListener('click', h => {
+    console.log('hello')
+    let eew_mode = model.cloneNode(true)
+    eew_mode.classList.add('cloned')
+    eew_mode.style.display = 'flex'
 
+    let btt = document.createElement('button')
+    btt.classList.add('bg-red-500')
+    btt.innerText = 'Remove'
+    btt.type = 'button'
+    eew_mode.append(btt)
+
+    document.getElementById('all_edit_columns').append(eew_mode)
+
+    btt.addEventListener('click', d => {
+        d.target.parentNode.remove()
+    })
+})
 
 // render row tables
 function renderRowsTable(data, colu, db, tb, key, columns_full) {
@@ -288,29 +307,52 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
     edit_table_btn.type = 'button'
 
     let edit_tab = document.getElementById('edit_table_modal')
+    let col_cont = edit_tab.querySelector('#all_edit_columns')
+    let mode = document.getElementById('edit_each_column')
+    col_cont.innerHTML = ''
+
+    let gb = document.getElementById('edit_table_error')
+    edit_tab.addEventListener('submit', async ff => {
+        ff.preventDefault()
+        let d = new FormData(edit_tab)
+        gb.style.display = 'none'
+
+        let r = await fetch('/table/edit', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: d})
+        let f = await r.json();
+        if (r.status == 200) {
+            document.getElementById('edit_table_modal').style.display = 'none'
+            getTables(ff, db, key)
+        } else {
+            gb.style.display = 'flex'
+            gb.innerText = f
+        }
+    })
+    let clonedNodes = document.querySelectorAll('.cloned');
+    clonedNodes.forEach(node => node.remove());
+
     edit_table_btn.addEventListener('click', e => {
         edit_tab.style.display = 'flex'
+
+        edit_tab.querySelector('input[name="name"]').value = tb
+        edit_tab.querySelector('input[name="old_name"]').value = tb
+        edit_tab.querySelector('input[name="db"]').value = db
+
+        for (let z in columns_full) {
+            let new_mode = mode.cloneNode(true)
+            new_mode.style.display = 'flex'
+
+            new_mode.querySelector('input[name="column[]"]').value = z
+            new_mode.querySelector('input[name="type[]"]').value = columns_full[z]['Type']
+            new_mode.querySelector('input[name="DEFAULT[]"]').value = columns_full[z]['Default']
+            new_mode.querySelector('select[name="PRIMARY[]"]').value = columns_full[z]['Key'] == 'PRI' ? 'PRIMARY KEY' : ""
+            new_mode.querySelector('select[name="NULL[]"]').value = columns_full[z]['Null'] == 'No' ? 'NOT NULL' : ""
+            new_mode.querySelector('select[name="AI[]"]').value = columns_full[z]['Extra'] == 'auto_increment' ? 'AUTO_INCREMENT' : ""
+            new_mode.querySelector('select[name="UNIQUE[]"]').value = columns_full[z]['Unique'] == true ? 'UNIQUE' : ""
+            col_cont.append(new_mode)
+        }
+
     })
 
-    let col_cont = edit_tab.querySelector('#all_columns')
-    let mode = edit_tab.querySelector('#each_column')
-    mode.style.display = 'none'
-
-    edit_tab.querySelector('input[name="name"]').value = tb
-    edit_tab.querySelector('input[name="old_name"]').value = tb
-
-    for (let z in columns_full) {
-        let new_mode = mode.cloneNode(true)
-        new_mode.style.display = 'flex'
-        new_mode.querySelector('input[name="column[]"]').value = z
-        new_mode.querySelector('input[name="type[]"]').value = columns_full[z]['Type']
-        new_mode.querySelector('input[name="DEFAULT[]"]').value = columns_full[z]['Default']
-        new_mode.querySelector('select[name="PRIMARY[]"]').value = columns_full[z]['Key'] == 'PRI' ? 'PRIMARY KEY' : ""
-        new_mode.querySelector('select[name="NULL[]"]').value = columns_full[z]['Null'] == 'No' ? 'NOT NULL' : ""
-        new_mode.querySelector('select[name="AI[]"]').value = columns_full[z]['Extra'] == 'auto_increment' ? 'AUTO_INCREMENT' : ""
-        new_mode.querySelector('select[name="UNIQUE[]"]').value = columns_full[z]['Unique'] == true ? 'UNIQUE' : ""
-        col_cont.append(new_mode)
-    }
 
     divs.append(edit_table_btn)
 
@@ -575,8 +617,9 @@ close_table_modal.addEventListener('click', (e) => {
 let close_edit_table_modal = document.getElementById('close_edit_table_modal')
 close_edit_table_modal.addEventListener('click', (e) => {
     e.target.parentNode.parentNode.style.display = 'none'
-    document.getElementById('edit_table_error').style.display = 'none'
-    document.getElementById('edit_table_db').removeEventListener('submit', () => {return })
+    // document.getElementById('edit_table_error').style.display = 'none'
+    document.getElementById('edit_table_modal').removeEventListener('submit', () => {return })
+    document.getElementById('all_edit_columns').innerHTML = ''
 
 })
 
@@ -643,8 +686,4 @@ async function getDbsApi() {
 
     })
     displayer.append(container)
-}
-
-function createSql() {
-    document.getElementById('raw_sql').style.display = 'flex'
 }

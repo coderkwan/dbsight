@@ -178,76 +178,22 @@
                         <button type="button" id="close_edit_table_modal"
                             class="bg-red-500 w-fit -full pointer">X</button>
                     </div>
-                    <p id="create_table_error" class="text-red-500 hidden"></p>
-                    <input type="text" name="db" id="create_table_db" required value="{{ old('db') }}"
+                    <p id="edit_table_error" class="text-red-500 hidden"></p>
+                    <input type="text" name="db" id="edit_table_db" required value="{{ old('db') }}"
                         placeholder="table db" hidden>
                     <input type="text" name="old_name" required hidden value="{{ old('old_name') }}"
                         placeholder="table name" class="p-2 border">
                     <input type="text" name="name" required value="{{ old('name') }}"
                         placeholder="table name" class="p-2 border">
                     <h3 class="text-xl">Columns</h3>
-                    <div class="flex gap-5 flex-col" id="all_columns">
-                        <div class="flex gap-5 items-end each_column" id="each_column">
-                            <div class="flex flex-col">
-                                <label for="">Name</label>
-                                <input type="text" name="column[]" required value="id"
-                                    placeholder="Column name" class="p-1 border">
-                            </div>
-                            <div class="flex flex-col">
-                                <label for="">Type</label>
-                                <input name="type[]" placeholder="varchar(255)" type="text" class="p-1 border">
-                            </div>
-                            <div class="flex flex-col">
-                                <label>Primary</label>
-                                <select name="PRIMARY[]" class="p-1">
-                                    <option value="">NO</option>
-                                    <option value="PRIMARY KEY" selected>YES</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col">
-                                <label>NULL</label>
-                                <select name="NULL[]" class="p-1">
-                                    <option value="NOT NULL">No</option>
-                                    <option value="">Yes</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col">
-                                <label>Unique</label>
-                                <select name="UNIQUE[]" class="p-1">
-                                    <option value="">No</option>
-                                    <option value="UNIQUE" selected>Yes</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col">
-                                <label>AI</label>
-                                <select name="AI[]" class="p-1">
-                                    <option value="">No</option>
-                                    <option value="AUTO_INCREMENT" selected>Yes</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col">
-                                <label>Default</label>
-                                <input name="DEFAULT[]" type="text" class="p-1 border" />
-                            </div>
-                        </div>
+                    <div class="flex gap-5 flex-col" id="all_edit_columns">
                     </div>
-                    <button type="button" id="add_column_btn">Add column +</button>
+                    <button type="button" id="add_column_on_edit">Add column +</button>
                     <button type="submit" class="bg-green-500">Create Table</button>
                     @foreach ($errors->all() as $error)
                         <p class="text-rose-500 font-xs">{{ $error }}</p>
                     @endforeach
                 </form>
-            </div>
-            <div id="raw_sql" class="hidden">
-                <form action="/raw" method="post" class="w-full">
-                    @csrf
-                    <label>Type your SQL query bellow!</label>
-                    <textarea required rows="5" cols="50" class="text-white w-full p-2 bg-slate-900" name="sql">
-                    </textarea>
-                    <button>Excecute</button>
-                </form>
-                <div class="" id="raw_sql_container">
-                </div>
             </div>
             <div id="rename_databese" class="hidden flex-col p-3">
                 <button id="close_rename_modal" class="bg-red-400 w-fit p-2 self-end text-white">X</button>
@@ -258,11 +204,53 @@
                     <input class='p-2 border' name="old_name" class="hidden" style="display: none;" />
                     <button type="submit">Update</button>
                 </form>
-                <div class="" id="raw_sql_container">
-                </div>
             </div>
         </div>
         </div>
+        {{-- for copy sake --}}
+        <div class="hidden gap-5 items-end each_column" id="edit_each_column">
+            <div class="flex flex-col">
+                <label for="">Name</label>
+                <input type="text" name="column[]" required placeholder="Column name" class="p-1 border">
+            </div>
+            <div class="flex flex-col">
+                <label for="">Type</label>
+                <input name="type[]" placeholder="varchar(255)" type="text" class="p-1 border">
+            </div>
+            <div class="flex flex-col">
+                <label>Primary</label>
+                <select name="PRIMARY[]" class="p-1">
+                    <option value="">NO</option>
+                    <option value="PRIMARY KEY">YES</option>
+                </select>
+            </div>
+            <div class="flex flex-col">
+                <label>NULL</label>
+                <select name="NULL[]" class="p-1">
+                    <option value="NOT NULL">No</option>
+                    <option value="">Yes</option>
+                </select>
+            </div>
+            <div class="flex flex-col">
+                <label>Unique</label>
+                <select name="UNIQUE[]" class="p-1">
+                    <option value="">No</option>
+                    <option value="UNIQUE">Yes</option>
+                </select>
+            </div>
+            <div class="flex flex-col">
+                <label>AI</label>
+                <select name="AI[]" class="p-1">
+                    <option value="">No</option>
+                    <option value="AUTO_INCREMENT">Yes</option>
+                </select>
+            </div>
+            <div class="flex flex-col">
+                <label>Default</label>
+                <input name="DEFAULT[]" type="text" class="p-1 border" />
+            </div>
+        </div>
+        {{-- end for copy sake --}}
     </main>
     <script src="{{ asset('js/app.js') }}"></script>
 </body>

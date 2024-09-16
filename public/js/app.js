@@ -359,6 +359,13 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
     edit_table_btn.type = 'button'
 
     let edit_tab = ById('edit_table_modal')
+    let keyi = createNode('input')
+    keyi.hidden = 'true'
+    keyi.name = 'key'
+    keyi.id = 'edit_table_modal_key'
+    keyi.value = key
+    edit_tab.append(keyi)
+
     let col_cont = edit_tab.querySelector('#all_edit_columns')
     let mode = ById('edit_each_column')
     col_cont.innerHTML = ''
@@ -743,6 +750,10 @@ close_edit_table_modal.addEventListener('click', (e) => {
     ById('edit_table_modal').removeEventListener('submit', () => {return })
     ById('all_edit_columns').innerHTML = ''
 
+    let db = ById('edit_table_db').value
+    let tb = ById('edit_table_old_table').value
+    let key = ById('edit_table_modal_key').value
+    getRows(db, tb, key)
 })
 
 
@@ -827,8 +838,14 @@ ById('save_table_name').addEventListener('click', async (e) => {
         ById('edit_table_error').style.color = "green"
         ById('edit_table_error').style.display = "flex"
 
-        setTimeout(() => ById('edit_table_error').style.display = "none"
-            , 4000)
+        setTimeout(() => {
+
+            ById('edit_table_error').style.display = "none"
+            ById('edit_table_modal').style.display = "none"
+            getRows(ById('edit_table_db').value, ById('edit_table_table').value, ById('edit_table_modal_key').value)
+        }
+            , 1000)
+
     } else {
         ById('edit_table_error').innerText = res
         ById('edit_table_error').style.color = "red"

@@ -38,8 +38,6 @@
             <nav class="bg-slate-200 p-4  uppercase flex gap-5 items-center justify-between mb-3 text-[12px]">
                 <div class="flex gap-5 items-center">
                     <button class="border p-2 bg-slate-500 uppercase" onclick="getDbsApi()">Databases</button>
-                    <button onclick="createSql()" class="bg-indigo-400 text-gray-200 px-5 py-2 ">SQL</button>
-                    <a href="/" class="bg-indigo-400 text-gray-200 px-5 py-2 ">Import</a>
                     <a href="/exportall" class="bg-indigo-400 text-gray-200 px-5 py-2 ">Export All Databases</a>
                 </div>
                 <div class="flex gap-5 items-center">

@@ -11,6 +11,10 @@
     padding: 12px;
 }
 
+button {
+    cursor: pointer;
+}
+
 table {
     width: 100%;
     max-width: 100%;

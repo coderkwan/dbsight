@@ -181,15 +181,18 @@
                     <p id="edit_table_error" class="text-red-500 hidden"></p>
                     <input type="text" name="db" id="edit_table_db" required value="{{ old('db') }}"
                         placeholder="table db" hidden>
-                    <input type="text" name="old_name" required hidden value="{{ old('old_name') }}"
-                        placeholder="table name" class="p-2 border">
-                    <input type="text" name="name" required value="{{ old('name') }}"
-                        placeholder="table name" class="p-2 border">
+                    <input type="text" id="edit_table_old_table" name="old_name" required hidden
+                        value="{{ old('old_name') }}" placeholder="table name" class="p-2 border">
+                    <div class="flex gap-3">
+                        <input type="text" name="name" id="edit_table_table"required
+                            value="{{ old('name') }}" placeholder="table name" class="p-2 border">
+                        <button type="button" id="save_table_name" class="w-[40%] bg-green-300 text-slate-800">Save
+                            name</button>
+                    </div>
                     <h3 class="text-xl">Columns</h3>
                     <div class="flex gap-5 flex-col" id="all_edit_columns">
                     </div>
                     <button type="button" id="add_column_on_edit">Add column +</button>
-                    <button type="submit" class="bg-green-500">Create Table</button>
                     @foreach ($errors->all() as $error)
                         <p class="text-rose-500 font-xs">{{ $error }}</p>
                     @endforeach

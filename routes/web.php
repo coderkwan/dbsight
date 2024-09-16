@@ -283,6 +283,16 @@ Route::post('/create/table', function (Request $req) {
 })->middleware(SetDynamicDbConnection::class);
 
 
+Route::post('table/rename', function (Request $req) {
+    $data = $req->input();
+    try {
+        DB::connection('dynamic_db')->select("RENAME TABLE `" . $data['db'] . "`.`" . $data['old_name'] . "` TO `" . $data['db'] . "`.`" . $data['name']  . "`");
+        return response()->json('hell');
+    } catch (Throwable $th) {
+        return response()->json($th->getMessage(), 423);
+    }
+})->middleware(SetDynamicDbConnection::class);
+
 Route::post('/delete/table', function (Request $req) {
     $data = $req->input();
     try {

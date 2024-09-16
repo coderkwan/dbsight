@@ -27,7 +27,7 @@
         <input type="text" name="user" placeholder="admin" required value="{{ old('username') }}"
             class="border px-3 py-1">
         <label for="">Password</label>
-        <input type="password" name="password" placeholder="1234" required value="{{ old('password') }}"
+        <input type="password" name="password" placeholder="1234" value="{{ old('password') }}"
             class="border px-3 py-1">
         @foreach ($errors->all() as $err)
             <p class="text-rose-400 my-2">{{ $err }}</p>

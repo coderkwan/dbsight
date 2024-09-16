@@ -22,7 +22,7 @@ class SetDynamicDbConnection
                 'port' => $dbDetails->port,
                 'database' => null,
                 'username' => $dbDetails->username,
-                'password' => $dbDetails->password,
+                'password' => $dbDetails->password ?  $dbDetails->password : "",
             ]);
             DB::purge('dynamic_db'); // Clear the previous connection if exists
             DB::connection('dynamic_db')->reconnect();
@@ -31,7 +31,6 @@ class SetDynamicDbConnection
                 DB::connection('dynamic_db')->getPdo();
                 return $next($request);
             } catch (\Throwable $th) {
-                dd($th);
                 Cookie::expire('db_connection_details');
                 return back()->withErrors($th)->withInput(['host' => $dbDetails->host,  'driver' => $dbDetails->driver, 'password' => $dbDetails->password, 'username' => $dbDetails->username, 'port' => $dbDetails->port]);
             }

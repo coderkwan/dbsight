@@ -244,16 +244,23 @@ async function getTables(e, name, key) {
 }
 let model = ById('edit_each_column')
 let add_col = ById('add_column_on_edit')
+
 add_col.addEventListener('click', h => {
-    console.log('hello')
     let eew_mode = model.cloneNode(true)
     eew_mode.classList.add('cloned')
     eew_mode.style.display = 'flex'
 
+    let bt = createNode('button')
+    bt.style.backgroundColor = 'green'
+    bt.innerText = 'Save'
+    bt.type = 'button'
+
     let btt = createNode('button')
     btt.classList.add('bg-red-500')
-    btt.innerText = 'Remove'
+    btt.innerText = 'Delete'
     btt.type = 'button'
+
+    eew_mode.append(bt)
     eew_mode.append(btt)
 
     ById('all_edit_columns').append(eew_mode)
@@ -310,22 +317,7 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
     let mode = ById('edit_each_column')
     col_cont.innerHTML = ''
 
-    let gb = ById('edit_table_error')
-    edit_tab.addEventListener('submit', async ff => {
-        ff.preventDefault()
-        let d = new FormData(edit_tab)
-        gb.style.display = 'none'
-
-        let r = await fetch('/table/edit', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: d})
-        let f = await r.json();
-        if (r.status == 200) {
-            ById('edit_table_modal').style.display = 'none'
-            getTables(ff, db, key)
-        } else {
-            gb.style.display = 'flex'
-            gb.innerText = f
-        }
-    })
+    // does this work 👇
     let clonedNodes = document.querySelectorAll('.cloned');
     clonedNodes.forEach(node => node.remove());
 
@@ -347,10 +339,71 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
             new_mode.querySelector('select[name="NULL[]"]').value = columns_full[z]['Null'] == 'No' ? 'NOT NULL' : ""
             new_mode.querySelector('select[name="AI[]"]').value = columns_full[z]['Extra'] == 'auto_increment' ? 'AUTO_INCREMENT' : ""
             new_mode.querySelector('select[name="UNIQUE[]"]').value = columns_full[z]['Unique'] == true ? 'UNIQUE' : ""
-            let saver = createNode('buttoon')
-            saver.classList.add('border', 'p-2', 'cursor-pointer', 'text-green-500')
-            saver.innerText = 'save'
+
+            let old_name = createNode('input')
+            old_name.value = z
+            old_name.name = 'old_names[]'
+            old_name.style.display = 'none'
+            new_mode.append(old_name)
+
+            let saver = createNode('button')
+            saver.type = 'button'
+            saver.classList.add('border', 'p-2', 'cursor-pointer')
+            saver.style.backgroundColor = 'green'
+            saver.innerText = 'Save'
+
+            saver.addEventListener('click', async (e) => {
+                e.preventDefault()
+                let new_name = new_mode.querySelector('input[name="column[]"]').value
+                let type = new_mode.querySelector('input[name="type[]"]').value
+                let _default = new_mode.querySelector('input[name="DEFAULT[]"]').value
+                let key = new_mode.querySelector('select[name="PRIMARY[]"]').value
+                let _null = new_mode.querySelector('select[name="NULL[]"]').value
+                let ai = new_mode.querySelector('select[name="AI[]"]').value
+                let unique = new_mode.querySelector('select[name="UNIQUE[]"]').value
+
+                let fd = new FormData()
+                fd.append('db', ById('edit_table_db'))
+                fd.append('table', ById('edit_table_table'))
+                fd.append('column', z)
+                fd.append('new_name', new_name)
+                fd.append('type', type)
+                fd.append('key', key)
+                fd.append('_null', _null)
+                fd.append('unique', unique)
+                fd.append('ai', ai)
+                fd.append('_default', _default)
+
+                let r = await fetch('table/updatecolumn', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: fd})
+                let rd = await r.json()
+
+                if (r.status == 200) {
+                    ById('edit_table_error').innerText = "Column updated!"
+                    ById('edit_table_error').style.color = "green"
+                    ById('edit_table_error').style.display = "flex"
+
+                    setTimeout(() => ById('edit_table_error').style.display = "none"
+                        , 4000)
+                } else {
+                    ById('edit_table_error').innerText = rd
+                    ById('edit_table_error').style.color = "red"
+                    ById('edit_table_error').style.display = "flex"
+                }
+            })
+
+            let deleter = createNode('button')
+            deleter.classList.add('border', 'p-2', 'cursor-pointer')
+            deleter.style.backgroundColor = 'tomato'
+            deleter.type = 'button'
+            deleter.innerText = 'Delete'
+
+            deleter.addEventListener('click', (e) => {
+                e.preventDefault()
+                console.log("delete")
+            })
+
             new_mode.append(saver)
+            new_mode.append(deleter)
             col_cont.append(new_mode)
         }
 

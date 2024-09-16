@@ -199,53 +199,6 @@ Route::post('/database/rename', function (Request $req) {
     }
 })->middleware(SetDynamicDbConnection::class);
 
-Route::post('/table/edit', function (Request $req) {
-    $data = $req->input();
-    $text = '';
-    $temp_name = md5(uniqid(mt_rand(), true));
-    $col_len = count($data['column']);
-    $columns = "";
-
-    $old_data = DB::connection('dynamic_db')->select("SHOW COLUMNS FROM `" . $data['db'] . "`.`" . $data['old_name'] . "`");
-    $old_len = count($old_data);
-
-    foreach ($old_data as $key => $value) {
-        $columns = $columns . $value->Field;
-        if ($old_len != 1) {
-            $columns = $columns . ", ";
-        }
-        $old_len = $old_len - 1;
-    }
-
-
-    foreach ($data['column'] as $key => $value) {
-        $text = $text . $value;
-        $text = $text . " " . $data['type'][$key];
-
-        // other options
-        if ($data['DEFAULT'][$key] != null && strlen(trim($data['DEFAULT'][$key])) > 0) {
-            $text = $text . " " . $data['NULL'][$key] . " " . $data['UNIQUE'][$key] . " "  . $data['AI'][$key] . " DEFAULT '" . $data['DEFAULT'][$key] . "' " . $data['PRIMARY'][$key];
-        } else {
-            $text = $text . " " . $data['NULL'][$key] . " " . $data['UNIQUE'][$key] . " "  . $data['AI'][$key] . " " . $data['PRIMARY'][$key];
-        }
-
-        if ($key != $col_len - 1) {
-            $text = $text . ", ";
-        }
-    }
-
-    try {
-        DB::connection('dynamic_db')->select("CREATE TABLE `" . $data['db'] . "`.`" . $temp_name . "` (" . $text . ")");
-        DB::connection('dynamic_db')->select("INSERT INTO `" . $data['db'] . "`.`" . $temp_name . "` SELECT $columns FROM `" . $data['db'] . "`.`" . $data['old_name']  . "`");
-        DB::connection('dynamic_db')->select("DROP TABLE `" . $data['db'] . "`.`" . $data['old_name'] . "`");
-        DB::connection('dynamic_db')->select("RENAME TABLE `" . $data['db'] . "`.`" . $temp_name . "` TO `" . $data['db'] . "`.`" . $data['name'] . "`");
-
-        return response()->json('done baby');
-    } catch (\Throwable $th) {
-        return response()->json($th->getMessage(), 401);
-    }
-})->middleware(SetDynamicDbConnection::class);
-
 Route::post('/create/table', function (Request $req) {
     $data = $req->input();
     $text = '';
@@ -287,7 +240,20 @@ Route::post('table/rename', function (Request $req) {
     $data = $req->input();
     try {
         DB::connection('dynamic_db')->select("RENAME TABLE `" . $data['db'] . "`.`" . $data['old_name'] . "` TO `" . $data['db'] . "`.`" . $data['name']  . "`");
-        return response()->json('hell');
+        return response()->json('Table successfully renamed!');
+    } catch (Throwable $th) {
+        return response()->json($th->getMessage(), 401);
+    }
+})->middleware(SetDynamicDbConnection::class);
+
+
+Route::post('table/updatecolumn', function (Request $req) {
+    $data = $req->input();
+    $text = '';
+    try {
+        DB::connection('dynamic_db')->select("ALTER TABLE `" . $data['db'] . "`.`" . $data['table'] . "` CHANGE `" . $data['column'] . "` `" . $data['new_name']  . "` " . $text);
+
+        return response()->json('Table upated successfully!');
     } catch (Throwable $th) {
         return response()->json($th->getMessage(), 423);
     }

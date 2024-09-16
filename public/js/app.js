@@ -246,24 +246,70 @@ let model = ById('edit_each_column')
 let add_col = ById('add_column_on_edit')
 
 add_col.addEventListener('click', h => {
-    let eew_mode = model.cloneNode(true)
-    eew_mode.classList.add('cloned')
-    eew_mode.style.display = 'flex'
+    let new_mode = model.cloneNode(true)
+    new_mode.classList.add('cloned')
+    new_mode.style.display = 'flex'
 
     let bt = createNode('button')
     bt.style.backgroundColor = 'green'
     bt.innerText = 'Save'
     bt.type = 'button'
 
+    bt.addEventListener('click', async e => {
+        e.preventDefault()
+
+        let name = new_mode.querySelector('input[name="column[]"]').value
+        let type = new_mode.querySelector('input[name="type[]"]').value
+        let _default = new_mode.querySelector('input[name="DEFAULT[]"]').value
+        let key = new_mode.querySelector('select[name="PRIMARY[]"]').value
+        let _null = new_mode.querySelector('select[name="NULL[]"]').value
+        let ai = new_mode.querySelector('select[name="AI[]"]').value
+        let unique = new_mode.querySelector('select[name="UNIQUE[]"]').value
+
+        if (name.trim().length > 0 && type.trim().length > 0) {
+            let fd = new FormData()
+            fd.append('db', ById('edit_table_db').value)
+            fd.append('table', ById('edit_table_table').value)
+            fd.append('column', name)
+            fd.append('type', type)
+            fd.append('key', key)
+            fd.append('_null', _null)
+            fd.append('unique', unique)
+            fd.append('ai', ai)
+            fd.append('_default', _default)
+
+            let r = await fetch('table/createcolumn', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: fd})
+            let rd = await r.json()
+
+            if (r.status == 200) {
+                ById('edit_table_error').innerText = "Column added!"
+                ById('edit_table_error').style.color = "green"
+                ById('edit_table_error').style.display = "flex"
+
+                setTimeout(() => ById('edit_table_error').style.display = "none"
+                    , 4000)
+            } else {
+                ById('edit_table_error').innerText = rd
+                ById('edit_table_error').style.color = "red"
+                ById('edit_table_error').style.display = "flex"
+            }
+        } else {
+            ById('edit_table_error').innerText = 'Name and Type is required!'
+            ById('edit_table_error').style.color = "red"
+            ById('edit_table_error').style.display = "flex"
+        }
+
+    })
+
     let btt = createNode('button')
     btt.classList.add('bg-red-500')
     btt.innerText = 'Delete'
     btt.type = 'button'
 
-    eew_mode.append(bt)
-    eew_mode.append(btt)
+    new_mode.append(bt)
+    new_mode.append(btt)
 
-    ById('all_edit_columns').append(eew_mode)
+    ById('all_edit_columns').append(new_mode)
 
     btt.addEventListener('click', d => {
         d.target.parentNode.remove()
@@ -336,7 +382,7 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
             new_mode.querySelector('input[name="type[]"]').value = columns_full[z]['Type']
             new_mode.querySelector('input[name="DEFAULT[]"]').value = columns_full[z]['Default']
             new_mode.querySelector('select[name="PRIMARY[]"]').value = columns_full[z]['Key'] == 'PRI' ? 'PRIMARY KEY' : ""
-            new_mode.querySelector('select[name="NULL[]"]').value = columns_full[z]['Null'] == 'No' ? 'NOT NULL' : ""
+            new_mode.querySelector('select[name="NULL[]"]').value = columns_full[z]['Null'] == 'NO' ? 'NOT NULL' : ""
             new_mode.querySelector('select[name="AI[]"]').value = columns_full[z]['Extra'] == 'auto_increment' ? 'AUTO_INCREMENT' : ""
             new_mode.querySelector('select[name="UNIQUE[]"]').value = columns_full[z]['Unique'] == true ? 'UNIQUE' : ""
 
@@ -363,8 +409,8 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
                 let unique = new_mode.querySelector('select[name="UNIQUE[]"]').value
 
                 let fd = new FormData()
-                fd.append('db', ById('edit_table_db'))
-                fd.append('table', ById('edit_table_table'))
+                fd.append('db', ById('edit_table_db').value)
+                fd.append('table', ById('edit_table_table').value)
                 fd.append('column', z)
                 fd.append('new_name', new_name)
                 fd.append('type', type)
@@ -397,9 +443,30 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
             deleter.type = 'button'
             deleter.innerText = 'Delete'
 
-            deleter.addEventListener('click', (e) => {
+            deleter.addEventListener('click', async (e) => {
                 e.preventDefault()
-                console.log("delete")
+
+                let fd = new FormData()
+                fd.append('db', ById('edit_table_db').value)
+                fd.append('table', ById('edit_table_table').value)
+                fd.append('column', z)
+
+                let r = await fetch('table/deletecolumn', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: fd})
+                let rd = await r.json()
+
+                if (r.status == 200) {
+                    ById('edit_table_error').innerText = "Column Deleted!"
+                    ById('edit_table_error').style.color = "green"
+                    ById('edit_table_error').style.display = "flex"
+                    new_mode.remove()
+
+                    setTimeout(() => ById('edit_table_error').style.display = "none"
+                        , 4000)
+                } else {
+                    ById('edit_table_error').innerText = rd
+                    ById('edit_table_error').style.color = "red"
+                    ById('edit_table_error').style.display = "flex"
+                }
             })
 
             new_mode.append(saver)
@@ -408,7 +475,6 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
         }
 
     })
-
 
     divs.append(edit_table_btn)
 

@@ -204,6 +204,7 @@ Route::post('/create/table', function (Request $req) {
     $text = '';
     $col_len = count($data['column']);
 
+
     foreach ($data['column'] as $key => $value) {
 
         $text = $text . $value;
@@ -247,9 +248,54 @@ Route::post('table/rename', function (Request $req) {
 })->middleware(SetDynamicDbConnection::class);
 
 
+
+Route::post('table/createcolumn', function (Request $req) {
+    $data = $req->input();
+    $name = $data['column'];
+    $type = $data['type'];
+    $text = '`' . $name . '` ' . $type;
+
+    foreach ($data as $key => $value) {
+        if ($key != 'db' && $key  != 'table' && $key != 'column' && $key != 'type') {
+            if ($key == '_default') {
+                if (strlen(trim($value)) > 0) {
+                    $text = $text . " DEFAULT '" . $value . "'";
+                } else {
+                }
+            } else {
+                $text = $text . " " . $value;
+            }
+        }
+    }
+
+    try {
+        DB::connection('dynamic_db')->select("ALTER TABLE `" . $data['db'] . "`.`" . $data['table'] . "` ADD COLUMN " . $text);
+
+        return response()->json('Table upated successfully!');
+    } catch (Throwable $th) {
+        return response()->json($th->getMessage(), 423);
+    }
+})->middleware(SetDynamicDbConnection::class);
+
+
+
 Route::post('table/updatecolumn', function (Request $req) {
     $data = $req->input();
     $text = '';
+
+    foreach ($data as $key => $value) {
+        if ($key != 'db' && $key != 'column' && $key  != 'new_name' && $key  != 'table' && $key  != 'db') {
+            if ($key == '_default') {
+                if (strlen(trim($value)) > 0) {
+                    $text = $text . " DEFAULT '" . $value . "'";
+                } else {
+                }
+            } else {
+                $text = $text . " " . $value;
+            }
+        }
+    }
+
     try {
         DB::connection('dynamic_db')->select("ALTER TABLE `" . $data['db'] . "`.`" . $data['table'] . "` CHANGE `" . $data['column'] . "` `" . $data['new_name']  . "` " . $text);
 
@@ -258,6 +304,22 @@ Route::post('table/updatecolumn', function (Request $req) {
         return response()->json($th->getMessage(), 423);
     }
 })->middleware(SetDynamicDbConnection::class);
+
+
+
+Route::post('table/deletecolumn', function (Request $req) {
+    $data = $req->input();
+
+    try {
+        DB::connection('dynamic_db')->select("ALTER TABLE `" . $data['db'] . "`.`" . $data['table'] . "` DROP COLUMN `" . $data['column'] . "`");
+
+        return response()->json('Table upated successfully!');
+    } catch (Throwable $th) {
+        return response()->json($th->getMessage(), 423);
+    }
+})->middleware(SetDynamicDbConnection::class);
+
+
 
 Route::post('/delete/table', function (Request $req) {
     $data = $req->input();

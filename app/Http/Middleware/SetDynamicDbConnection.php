@@ -31,8 +31,9 @@ class SetDynamicDbConnection
                 DB::connection('dynamic_db')->getPdo();
                 return $next($request);
             } catch (\Throwable $th) {
+                dd($th);
                 Cookie::expire('db_connection_details');
-                return back()->withErrors('Failed to connect to database!')->withInput(['host' => $dbDetails->host,  'driver' => $dbDetails->driver, 'password' => $dbDetails->password, 'username' => $dbDetails->username, 'port' => $dbDetails->port]);
+                return back()->withErrors($th)->withInput(['host' => $dbDetails->host,  'driver' => $dbDetails->driver, 'password' => $dbDetails->password, 'username' => $dbDetails->username, 'port' => $dbDetails->port]);
             }
         } else {
             return redirect('/login');

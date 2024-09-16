@@ -1,0 +1,203 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    color: #1e293b;
+}
+
+.tables_header {
+    background-color: white;
+    padding: 12px;
+}
+
+button {
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin: 20px 0;
+}
+
+table,
+th,
+td {
+    border: 1px solid #ddd;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+th,
+td {
+    padding: 2px 8px;
+    text-align: left;
+    word-wrap: break-all;
+    font-size: 10px;
+}
+
+tr button {
+    padding: 4px 15px;
+    font-size: 10px;
+}
+
+th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 800px;
+    padding: 20px;
+    margin: 30px 0;
+}
+
+button {
+    padding: 8px 12px;
+    background-color: #4f46e5;
+    color: #e5e7eb;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.remove_row {
+    background-color: black;
+}
+
+.edit_row {
+    background-color: #475569;
+}
+
+.form_element {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+
+.db_card {
+    display: flex;
+    flex-direction: column;
+    min-width: 240px;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 16px;
+    border: 2px solid #f5d0fe;
+    background-color: #fbcfe8;
+    color: #334155;
+    transition: ease all 0.6s;
+}
+
+.db_card p {
+    font-weight: normal;
+    font-size: 12px;
+    color: #9333ea;
+}
+
+.db_card p:nth-child(2) {
+    color: #db2777;
+}
+
+.db_card:hover {
+    border-color: #bbf7d0;
+    background-color: transparent;
+}
+
+.side_container {
+    margin-bottom: 12px;
+}
+
+.side_wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.side_drop {
+    cursor: pointer;
+    border: 1px solid;
+    padding: 10px;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.db_listed {
+    border: 1px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 15px;
+    width: 100%;
+    background-color: #e9d5ff;
+}
+
+.table_listed {
+    margin: 0px 0px 10px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 10px;
+}
+
+.side_tables {
+    background-color: white;
+    border: 1px solid #db2777;
+    padding: 2px 5px;
+    margin: 2px 0px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+#create_table_modal,
+#create_row_modal,
+#edit_table_modal,
+#rename_databese {
+    max-height: 90vh;
+    overflow: scroll;
+    max-width: 800px;
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    background-color: white;
+    box-shadow: 1px 1px 92px 23px #9e9fad;
+}
+
+#create_table_modal input,
+#edit_table_modal input,
+#create_row_modal input {
+    width: 100%;
+}
+
+.each_column {
+    font-size: 13px;
+}
+
+.each_column label {
+    font-size: 10px;
+}
+
+.each_column button {
+    background-color: tomato;
+}

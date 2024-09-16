@@ -3,14 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Laravel</title>
-
-    <!-- Fonts -->
+    <title>db sight</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-    @vite(['resources/css/app.css'])
-
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="app.css">
 </head>
 <body class="flex justify-center p-5">
     <form action="/login" method="post" class="p-5 bg-gray-100 flex flex-col w-full max-w-[500px]">
@@ -26,9 +23,6 @@
         <label for="">Port</label>
         <input type="text" name="port" placeholder="3306" required value="{{ old('port') }}"
             class="border px-3 py-1">
-        {{-- <label for="">Database</label> --}}
-        {{-- <input type="text" name="database" placeholder="maindb" required value="{{ old('database') }}" --}}
-        {{--     class="border px-3 py-1"> --}}
         <label for="">Username</label>
         <input type="text" name="user" placeholder="admin" required value="{{ old('username') }}"
             class="border px-3 py-1">

@@ -32,7 +32,7 @@
         @foreach ($errors->all() as $err)
             <p class="text-rose-400 my-2">{{ $err }}</p>
         @endforeach
-        <button type="submit">Login</button>
+        <button type="submit" class="bg-indigo-600 p-2 text-white curosor-pointer">Login</button>
     </form>
 </body>
 </html>

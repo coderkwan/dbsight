@@ -32,7 +32,7 @@ class SetDynamicDbConnection
                 return $next($request);
             } catch (\Throwable $th) {
                 Cookie::expire('db_connection_details');
-                return back()->withErrors($th)->withInput(['host' => $dbDetails->host,  'driver' => $dbDetails->driver, 'password' => $dbDetails->password, 'username' => $dbDetails->username, 'port' => $dbDetails->port]);
+                return back()->withErrors('Failed to connect to DB, ' .  $th->getMessage())->withInput(['host' => $dbDetails->host,  'driver' => $dbDetails->driver, 'password' => $dbDetails->password, 'username' => $dbDetails->username, 'port' => $dbDetails->port]);
             }
         } else {
             return redirect('/login');

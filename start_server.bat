@@ -1,2 +1,2 @@
-php\php.exe -S localhost:8008 -t public
+php\php.exe artisan serve --port=8008
 start http://localhost:8008

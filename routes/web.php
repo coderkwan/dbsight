@@ -176,6 +176,7 @@ Route::post('/create/database', function (Request $req) {
 Route::post('/database/rename', function (Request $req) {
     $data = $req->input();
     $name = trim($data['name']);
+    /* $name = str_replace(" ", "_", trim($data['name'])); */
 
     $host = Config::get('database.connections.dynamic_db.host');
     $username = Config::get('database.connections.dynamic_db.username');
@@ -184,13 +185,14 @@ Route::post('/database/rename', function (Request $req) {
 
     try {
         DB::connection('dynamic_db')->select("CREATE DATABASE `" . $name . "`");
-        $rr = "mysqldump  --ssl-verify-server-cert=0 --host=$host --port=$port --user=$username --password=$password " . $data['old_name'] . " | mysql --user=$username --password=$password $name";
+        $rr = "mysqldump  --ssl-verify-server-cert=0 --host=$host --port=$port --user=$username --password=$password `" . $data['old_name'] . "` | mysql --user=$username --password=$password `$name`";
         exec($rr, $output, $return_var);
 
         if ($return_var === 0) {
             DB::connection('dynamic_db')->select("DROP DATABASE `" . $data['old_name'] . "`");
         } else {
             DB::connection('dynamic_db')->select("DROP DATABASE `" . $name . "`");
+            throw new Exception("There was an error renaming your database! Command: mysqldump Not Found! try doing it in your shell.");
         }
 
         return response()->json("done");

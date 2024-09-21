@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -10,19 +11,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="app.css">
 </head>
-<body class="m-4 bg-gray-100">
+<body class="m-4">
     <main class="flex gap-4">
-        <nav id="sidebar" class="max-w-[20%] w-full border-2 border-slate-300 p-2 overflow-scroll max-h-[95vh]">
+        <nav id="sidebar"
+            class="rounded-xl max-w-[20%] w-full border border-slate-300 bg-gray-100 p-7 overflow-scroll h-[97vh]">
             @if (count($dbs) > 0)
                 @foreach ($dbs as $key => $item)
                     <div class="side_container">
                         <div class="side_wrapper ">
                             <div onclick="sidebarDropDownClicked(event, {{ $key }}, {{ json_encode($item['Database']) }})"
-                                class="side_drop">
+                                class="border border-slate-400 rounded-lg py-2 px-3 bg-white">
                                 +</div>
                             <p id="db_{{ $key }}"
                                 onclick="getTables(event, {{ json_encode($item['Database']) }}, {{ $key }})"
-                                class="db_listed">
+                                class="border border-slate-400 rounded-lg p-2 w-full bg-white cursor-pointer">
                                 {{ $item['Database'] }}
                             </p>
                         </div>
@@ -32,14 +34,16 @@
                 @endforeach
             @endif
         </nav>
-        <div class="border-2 border-slate-300 max-w-[80%] w-full  p-5 overflow-scroll max-h-[95vh]">
-            <nav class="bg-slate-200 p-4  uppercase flex gap-5 items-center justify-between mb-3 text-[12px]">
+        <div class="max-w-[80%] w-full h-[85vh]">
+            <nav
+                class="bg-gray-100 px-7 py-5 border border-slate-300 rounded-xl uppercase flex gap-5 items-center justify-between mb-4 text-[12px]">
                 <div class="flex gap-5 items-center">
-                    <button class="border p-2 bg-slate-500 uppercase" onclick="getDbsApi()">Databases</button>
-                    <a href="/exportall" class="bg-indigo-400 text-gray-200 px-5 py-2 ">Export All Databases</a>
+                    <button class="border border-slate-200 rounded-lg text-slate-700 p-3 bg-white uppercase"
+                        onclick="getDbsApi()">Databases</button>
                 </div>
                 <div class="flex gap-5 items-center">
-                    <a href="/logout" class="bg-black px-4 py-2  text-gray-200">Logout</a>
+                    <a href="/logout"
+                        class="border border-slate-200 rounded-lg text-slate-100 p-3 bg-slate-800 uppercase">Logout</a>
                 </div>
             </nav>
             <div>
@@ -49,14 +53,14 @@
                     </p>
                 @endif
             </div>
-            <div id="displayer" class="">
+            <div id="displayer" class="border border-slate-300 rounded-xl px-7 py-3 bg-gray-100 h-[100%]">
                 <form id="create_database_form" action="/create/database" method="post" class="w-full p-0">
                     @csrf
                     <div class="flex gap-2 items-center w-full">
                         <input type="text" name="name" value="{{ old('name') }}" placeholder="database name"
-                            class="py-2 px-5  border border-slate-200">
+                            class="border border-slate-200 rounded-lg text-slate-100 p-3 bg-white">
                         <button type="submit"
-                            class="py-2 px-5  border text-slate-800 uppercase text-[12px] border-slate-200 bg-green-300">Create
+                            class="border border-green-300 rounded-lg text-slate-700 p-3 bg-green-300">Create
                             Database</button>
                     </div>
                     @foreach ($errors->all() as $error)
@@ -64,13 +68,15 @@
                     @endforeach
                 </form>
                 <p class="mb-1 text-rose-500 text-sm hidden" id="global_error"></p>
-                <div id="display" class="">
+                <div id="display" class="mt-6">
+                    <h3 class="text-slate-700 font-bold text-2xl mb-3 uppercase">Databases</h3>
                     <div class="flex flex-wrap gap-3">
                         @foreach ($dbs as $key => $item)
                             <div onclick="getTables(event, {{ json_encode($item['Database']) }}, {{ $key }} )"
-                                class="db_card">
-                                {{ $item['Database'] }}
-                                <p>Tables: {{ $item['table_count'] }}</p>
+                                class="border border-slate-300 p-7 bg-white rounded-xl min-w-[300px] cursor-pointer">
+                                <h4 class="font-bold">{{ $item['Database'] }}</h4>
+                                <p class="text-blue-600 uppercase text-xs">Tables:
+                                    {{ $item['table_count'] }}</p>
                             </div>
                         @endforeach
                     </div>

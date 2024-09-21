@@ -60,18 +60,17 @@ async function getTables(e, name, key) {
     let mydb = name
 
     let divs = createNode('div')
-    divs.classList.add('flex', 'justify-between', 'items-center', 'tables_header')
+    divs.classList.add('flex', 'justify-between', 'items-center', 'py-6', 'border-b', 'border-slate-200', 'sticky', 'top-0', 'bg-gray-100')
 
     let header = createNode('h2')
     header.classList.add('text-2xl', 'font-bold')
-    header.innerText = "Tables in the " + mydb + " Database;"
+    header.innerHTML = `Tables in the <span class='text-blue-700'>${mydb}</span> Database`
     divs.append(header)
 
     let create_t_btn = createNode('button')
     create_t_btn.innerText = 'Create New Table'
     create_t_btn.type = 'button'
-    create_t_btn.style.backgroundColor = '#86efac'
-    create_t_btn.style.color = '#1e293b'
+    create_t_btn.classList.add('p-3', 'rounded-lg', 'bg-green-200', 'border', 'border-slate-400', 'text-slate-700', 'uppercase')
 
     create_t_btn.addEventListener('click', e => {
         ById('create_table_modal').style.display = 'flex'
@@ -94,12 +93,11 @@ async function getTables(e, name, key) {
         })
     })
 
-    divs.append(create_t_btn)
 
     let rename_btn = createNode('button')
     rename_btn.innerText = 'Rename Database'
     rename_btn.type = 'button'
-    rename_btn.style.backgroundColor = '#94a3b8'
+    rename_btn.classList.add('p-3', 'rounded-lg', 'bg-orange-100', 'text-slate-700', 'uppercase', 'border', 'border-slate-300')
 
     rename_btn.addEventListener('click', async e => {
         ById('rename_databese').style.display = 'flex'
@@ -132,7 +130,7 @@ async function getTables(e, name, key) {
     let delete_db_btn = createNode('button')
     delete_db_btn.innerText = 'Delete Database'
     delete_db_btn.type = 'button'
-    delete_db_btn.style.backgroundColor = '#ec4899'
+    delete_db_btn.classList.add('p-3', 'rounded-lg', 'bg-rose-100', 'text-slate-700', 'uppercase', 'border', 'border-slate-300')
 
     delete_db_btn.addEventListener('click', async e => {
         let d = new FormData()
@@ -153,36 +151,34 @@ async function getTables(e, name, key) {
         }
     })
 
-    divs.append(rename_btn)
-    divs.append(delete_db_btn)
+    let h_btn_cont = createNode('div')
+    h_btn_cont.classList.add('flex', 'gap-3', 'items-center')
+    h_btn_cont.append(create_t_btn)
+    h_btn_cont.append(rename_btn)
+    h_btn_cont.append(delete_db_btn)
+    divs.append(h_btn_cont)
     displayer.append(divs)
 
-    let table = createNode('table')
-    let table_h = createNode('thead')
-    let table_b = createNode('tbody')
+    let tables_cont = createNode('div')
+    tables_cont.classList.add('flex', 'flex-col', 'gap-3', 'mt-6')
 
-    let th_edit = createNode("th")
-    th_edit.innerText = "Edit"
-    let th_delete = createNode("th")
-    th_delete.innerText = "Delete"
-
-    let th = createNode("th")
-    th.innerText = "Tables"
-    table_h.append(th)
 
     for (let i = 0; i < data.length; i++) {
-        let tr = createNode("tr")
-        tr.id = "tr_" + key + "_" + i
+        let each_table = createNode("div")
+        each_table.classList.add('flex', 'py-2', 'px-4', 'rounded-lg', 'bg-white', 'border', 'border-slate-200', 'gap-3', 'justify-between', 'items-center')
 
-        let td_view = createNode("td")
         let view_btn = createNode('button')
-        view_btn.innerText = 'View'
-        td_view.append(view_btn)
+        view_btn.classList.add('bg-slate-400', 'rounded-lg', 'text-white')
+        view_btn.innerText = 'View Table'
 
-        let td_delete = createNode("td")
         let del_btn = createNode('button')
-        del_btn.classList.add('remove_row')
-        del_btn.innerText = 'Delete'
+        del_btn.classList.add('bg-rose-200', 'rounded-lg', 'text-slate-600')
+        del_btn.innerText = 'Delete Table'
+        let btn_cont = createNode("div")
+        btn_cont.classList.add('flex', 'gap-3', 'justify-between', 'items-center')
+        btn_cont.append(view_btn)
+        btn_cont.append(del_btn)
+
 
         view_btn.addEventListener('click', async () => {
             const d = await fetch(`/data?db=${mydb}&table=${Object.values(data[i])[0]}`, {method: 'get'})
@@ -215,23 +211,18 @@ async function getTables(e, name, key) {
             }
         })
 
-        td_delete.append(del_btn)
-
         for (let b in data[i]) {
-            let td = createNode("td")
+            let td = createNode("p")
+            td.classList.add('text-lg', 'font-bold', 'text-slate-700')
             td.innerText = data[i][b]
-            tr.append(td)
+            each_table.append(td)
         }
 
-        tr.append(td_view)
-        tr.append(td_delete)
-
-        table_b.append(tr)
+        each_table.append(btn_cont)
+        tables_cont.append(each_table)
     }
 
-    table.append(table_h)
-    table.append(table_b)
-    displayer.append(table)
+    displayer.append(tables_cont)
 
     if (data.length == 0) {
         let errp = createNode('p')
@@ -772,16 +763,23 @@ async function getDbsApi() {
     // sidebar
     let sb = ById('sidebar')
     sb.innerHTML = ''
+    let hh = createNode('h3')
+    hh.innerText = 'Databases'
+    hh.classList.add('uppercase', 'font-bold', 'text-2xl', 'mb-3', 'text-slate-700')
+    displayer.append(hh)
 
     res.forEach((item, i) => {
         let element = createNode('div')
-        element.classList.add('db_card')
-        element.innerText = item['Database']
+        element.classList.add('p-7', 'bg-white', 'border', 'border-slate-300', 'rounded-lg', 'min-w-[300px]', 'cursor-pointer')
 
+        let pb = createNode('h4')
+        pb.innerText = item['Database']
         let pa = createNode('p')
-        let pb = createNode('p')
         pa.innerText = "Tables: " + item['table_count']
+        pb.classList.add('font-bold')
+        pa.classList.add('text-xs', 'uppercase', 'text-blue-600')
 
+        element.append(pb)
         element.append(pa)
         element.addEventListener('click', (e) => getTables(e, item['Database'], i))
 
@@ -794,11 +792,11 @@ async function getDbsApi() {
         sb_wrap.classList.add('side_wrapper')
 
         let sb_drop = createNode('div')
-        sb_drop.classList.add('side_drop')
+        sb_drop.classList.add('border', 'border-slate-400', 'rounded-lg', 'cursor-pointer', 'bg-white', 'px-3', 'py-2')
         sb_drop.innerText = '+'
 
         let sb_p = createNode('p')
-        sb_p.classList.add('db_listed')
+        sb_p.classList.add('border', 'border-slate-400', 'rounded-lg', 'py-2', 'ps-4', 'w-full', 'bg-white', 'cursor-pointer')
         sb_p.id = "db_" + i
         sb_p.innerText = item['Database']
         sb_p.addEventListener('click', (e) => getTables(e, item['Database'], i))

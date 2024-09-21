@@ -20,11 +20,11 @@
                     <div class="side_container">
                         <div class="side_wrapper ">
                             <div onclick="sidebarDropDownClicked(event, {{ $key }}, {{ json_encode($item['Database']) }})"
-                                class="border border-slate-400 rounded-lg py-2 px-3 bg-white">
+                                class="cursor-pointer border border-slate-400 rounded-lg py-2 px-3 bg-white">
                                 +</div>
                             <p id="db_{{ $key }}"
                                 onclick="getTables(event, {{ json_encode($item['Database']) }}, {{ $key }})"
-                                class="border border-slate-400 rounded-lg p-2 w-full bg-white cursor-pointer">
+                                class="border border-slate-400 rounded-lg py-2 ps-4 w-full bg-white cursor-pointer">
                                 {{ $item['Database'] }}
                             </p>
                         </div>
@@ -53,7 +53,8 @@
                     </p>
                 @endif
             </div>
-            <div id="displayer" class="border border-slate-300 rounded-xl px-7 py-3 bg-gray-100 h-[100%]">
+            <div id="displayer"
+                class="overflow-scroll border border-slate-300 rounded-xl px-7 pb-3 bg-gray-100 h-[100%]">
                 <form id="create_database_form" action="/create/database" method="post" class="w-full p-0">
                     @csrf
                     <div class="flex gap-2 items-center w-full">
@@ -68,7 +69,7 @@
                     @endforeach
                 </form>
                 <p class="mb-1 text-rose-500 text-sm hidden" id="global_error"></p>
-                <div id="display" class="mt-6">
+                <div id="display" class="">
                     <h3 class="text-slate-700 font-bold text-2xl mb-3 uppercase">Databases</h3>
                     <div class="flex flex-wrap gap-3">
                         @foreach ($dbs as $key => $item)

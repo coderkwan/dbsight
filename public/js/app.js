@@ -64,7 +64,7 @@ async function getTables(e, name, key) {
 
     let header = createNode('h2')
     header.classList.add('text-2xl', 'font-bold')
-    header.innerHTML = `Tables in the <span class='text-blue-700'>${mydb}</span> Database`
+    header.innerHTML = `TABLES in the <span class='text-blue-700'>${mydb}</span> Database`
     divs.append(header)
 
     let create_t_btn = createNode('button')
@@ -323,30 +323,30 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
     db_clicked.style.backgroundColor = "#86efac"
 
     let divs = createNode('div')
-    divs.classList.add('flex', 'justify-between', 'items-center', 'tables_header')
+    divs.classList.add('flex', 'justify-between', 'items-center', 'py-6', 'border-b', 'border-slate-200', 'sticky', 'top-0', 'bg-gray-100')
 
     let header = createNode('h2')
     header.classList.add('text-2xl', 'font-bold')
-    header.innerText = "Rows of the " + tb + " table"
+    header.innerHTML = `ROWS in the <span class='text-blue-700'>${tb}</span> table`
     divs.append(header)
 
+    let btns_cont = createNode('div')
+    btns_cont.classList.add('flex', 'items-center', 'gap-3')
 
     let create_t_btn = createNode('button')
     create_t_btn.innerText = 'Create New Row'
-    create_t_btn.style.backgroundColor = '#86efac'
-    create_t_btn.style.color = '#1e293b'
+    create_t_btn.classList.add('p-3', 'rounded-lg', 'bg-green-200', 'border', 'border-slate-400', 'text-slate-700', 'uppercase')
     create_t_btn.type = 'button'
 
     create_t_btn.addEventListener('click', e => {
         ById('create_row_modal').style.display = 'flex'
     })
 
-    divs.append(create_t_btn)
+    btns_cont.append(create_t_btn)
 
     let edit_table_btn = createNode('button')
     edit_table_btn.innerText = 'Edit Table'
-    edit_table_btn.style.backgroundColor = '#94a3b8'
-    edit_table_btn.style.color = '#f1f5f9'
+    edit_table_btn.classList.add('p-3', 'rounded-lg', 'bg-orange-100', 'text-slate-700', 'uppercase', 'border', 'border-slate-300')
     edit_table_btn.type = 'button'
 
     let edit_tab = ById('edit_table_modal')
@@ -436,8 +436,7 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
             })
 
             let deleter = createNode('button')
-            deleter.classList.add('border', 'p-2', 'cursor-pointer')
-            deleter.style.backgroundColor = 'tomato'
+            deleter.classList.add('p-3', 'rounded-lg', 'bg-rose-100', 'text-slate-700', 'uppercase', 'border', 'border-slate-300')
             deleter.type = 'button'
             deleter.innerText = 'Delete'
 
@@ -474,12 +473,12 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
 
     })
 
-    divs.append(edit_table_btn)
+    btns_cont.append(edit_table_btn)
 
     let delete_db_btn = createNode('button')
     delete_db_btn.innerText = 'Delete Table'
     delete_db_btn.type = 'button'
-    delete_db_btn.style.backgroundColor = '#ec4899'
+    delete_db_btn.classList.add('p-3', 'rounded-lg', 'bg-rose-100', 'text-slate-700', 'uppercase', 'border', 'border-slate-300')
 
     delete_db_btn.addEventListener('click', async e => {
         let d = new FormData()
@@ -501,12 +500,15 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
         }
     })
 
-    divs.append(delete_db_btn)
+    btns_cont.append(delete_db_btn)
+    divs.append(btns_cont)
     displayer.append(divs)
 
     let table = createNode('table')
+    table.classList.add('table-fixed', 'rounded')
     let table_h = createNode('thead')
     let table_b = createNode('tbody')
+    table_h.classList.add('bg-white', 'p-4', 'text-lg')
 
     for (let i in colu) {
         let th = createNode("th")
@@ -520,6 +522,7 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
         let td_edit = createNode("td")
         let edit_btn = createNode('button')
         edit_btn.innerText = 'Edit'
+        edit_btn.classList.add('rounded-md', 'bg-blue-300', 'text-slate-800')
         td_edit.append(edit_btn)
 
         td_edit.addEventListener('click', e => {
@@ -566,7 +569,7 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
         let td_delete = createNode("td")
         let del_btn = createNode('button')
         del_btn.innerText = 'Delete'
-        del_btn.style.backgroundColor = 'black'
+        del_btn.classList.add('rounded-md', 'bg-red-300', 'text-slate-800')
 
         let da = new FormData()
         da.append('table', tb)

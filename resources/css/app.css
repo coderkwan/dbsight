@@ -6,10 +6,6 @@
     color: #1e293b;
 }
 
-.tables_header {
-    background-color: white;
-    padding: 12px;
-}
 
 button {
     cursor: pointer;
@@ -36,7 +32,7 @@ td {
     padding: 2px 8px;
     text-align: left;
     word-wrap: break-all;
-    font-size: 10px;
+    font-size: 12px;
 }
 
 tr button {
@@ -47,6 +43,7 @@ tr button {
 th {
     background-color: #f4f4f4;
     font-weight: bold;
+    font-size: 14px;
 }
 
 tr:nth-child(even) {

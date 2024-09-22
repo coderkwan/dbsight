@@ -44,11 +44,11 @@ async function getTables(e, name, key) {
 
     let listed = document.getElementsByClassName('db_listed')
     for (let i = 0; i < listed.length; i++) {
-        listed[i].style.backgroundColor = ""
+        listed[i].style.backgroundColor = "white"
     }
 
     let db_clicked = ById('db_' + key)
-    db_clicked.style.backgroundColor = "#86efac"
+    db_clicked.style.backgroundColor = "#bbf7d0"
 
     let bc_tb = document.getElementsByClassName('bc_tb')
     for (let i = 0; i < bc_tb.length; i++) {
@@ -213,8 +213,15 @@ async function getTables(e, name, key) {
 
         for (let b in data[i]) {
             let td = createNode("p")
-            td.classList.add('text-lg', 'font-bold', 'text-slate-700')
+            td.classList.add('text-lg', 'font-bold', 'text-slate-700', 'cursor-pointer')
             td.innerText = data[i][b]
+
+            td.addEventListener('click', async () => {
+                const d = await fetch(`/data?db=${mydb}&table=${Object.values(data[i])[0]}`, {method: 'get'})
+                const res = await d.json()
+                renderRowsTable(res.data, res.columns, mydb, Object.values(data[i])[0], key, res.columns_full)
+            })
+
             each_table.append(td)
         }
 
@@ -316,11 +323,11 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
 
     let listed = document.getElementsByClassName('db_listed')
     for (let i = 0; i < listed.length; i++) {
-        listed[i].style.backgroundColor = ""
+        listed[i].style.backgroundColor = "white"
     }
 
     let db_clicked = ById('db_' + key)
-    db_clicked.style.backgroundColor = "#86efac"
+    db_clicked.style.backgroundColor = "#bbf7d0"
 
     let divs = createNode('div')
     divs.classList.add('flex', 'justify-between', 'items-center', 'py-6', 'border-b', 'border-slate-200', 'sticky', 'top-0', 'bg-gray-100')
@@ -504,14 +511,33 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
     divs.append(btns_cont)
     displayer.append(divs)
 
+    let table_cont = createNode('div')
+    table_cont.classList.add('w-full', 'overflow-scroll', 'h-full')
     let table = createNode('table')
     table.classList.add('table-fixed', 'rounded')
     let table_h = createNode('thead')
     let table_b = createNode('tbody')
-    table_h.classList.add('bg-white', 'p-4', 'text-lg')
+    // table_h.classList.add('bg-white', 'p-4', 'text-lg')
+
+    let col_count = Object.keys(colu).length
+    let th_edit = createNode("th")
+    let th_del = createNode("th")
+    th_edit.innerText = "Edit"
+    th_del.innerText = "Delete"
+
+    if (col_count > 7) {
+        th_edit.classList.add('w-[200px]')
+        th_del.classList.add('w-[200px]')
+    }
+
+    table_h.append(th_edit)
+    table_h.append(th_del)
 
     for (let i in colu) {
         let th = createNode("th")
+        if (col_count > 7) {
+            th.classList.add('w-[200px]')
+        }
         th.innerText = i
         table_h.append(th)
     }
@@ -520,9 +546,9 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
         let tr = createNode("tr")
 
         let td_edit = createNode("td")
-        let edit_btn = createNode('button')
-        edit_btn.innerText = 'Edit'
-        edit_btn.classList.add('rounded-md', 'bg-blue-300', 'text-slate-800')
+        let edit_btn = createNode('img')
+        edit_btn.src = 'edit.png'
+        // edit_btn.classList.add('rounded-md', 'bg-blue-300', 'text-slate-800')
         td_edit.append(edit_btn)
 
         td_edit.addEventListener('click', e => {
@@ -561,15 +587,12 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
                     er.innerText = doner
                 }
             })
-
-            // populate data
-            // modify
         })
 
         let td_delete = createNode("td")
-        let del_btn = createNode('button')
-        del_btn.innerText = 'Delete'
-        del_btn.classList.add('rounded-md', 'bg-red-300', 'text-slate-800')
+        let del_btn = createNode('img')
+        del_btn.src = 'delete.png'
+        // del_btn.classList.add('rounded-md', 'bg-red-300', 'text-slate-800')
 
         let da = new FormData()
         da.append('table', tb)
@@ -594,21 +617,26 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
 
         td_delete.append(del_btn)
 
+        tr.append(td_edit)
+        tr.append(td_delete)
+
         for (let b in data[i]) {
             let td = createNode("td")
+            if (col_count > 7) {
+                td.classList.add('w-[200px]')
+            }
             td.innerText = data[i][b]
             tr.append(td)
         }
 
-        tr.append(td_edit)
-        tr.append(td_delete)
 
         table_b.append(tr)
     }
 
     table.append(table_h)
     table.append(table_b)
-    displayer.append(table)
+    table_cont.append(table)
+    displayer.append(table_cont)
 
     let foorm = renderForm(colu, tb, 'Create')
     displayer.append(foorm)
@@ -799,7 +827,7 @@ async function getDbsApi() {
         sb_drop.innerText = '+'
 
         let sb_p = createNode('p')
-        sb_p.classList.add('border', 'border-slate-400', 'rounded-lg', 'py-2', 'ps-4', 'w-full', 'bg-white', 'cursor-pointer')
+        sb_p.classList.add('db_listed','border', 'border-slate-400', 'rounded-lg', 'py-2', 'ps-4', 'w-full', 'bg-white', 'cursor-pointer')
         sb_p.id = "db_" + i
         sb_p.innerText = item['Database']
         sb_p.addEventListener('click', (e) => getTables(e, item['Database'], i))

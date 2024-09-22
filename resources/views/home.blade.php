@@ -24,7 +24,7 @@
                                 +</div>
                             <p id="db_{{ $key }}"
                                 onclick="getTables(event, {{ json_encode($item['Database']) }}, {{ $key }})"
-                                class="border border-slate-400 rounded-lg py-2 ps-4 w-full bg-white cursor-pointer">
+                                class="db_listed border border-slate-400 rounded-lg py-2 ps-4 w-full bg-white cursor-pointer">
                                 {{ $item['Database'] }}
                             </p>
                         </div>

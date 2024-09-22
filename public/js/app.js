@@ -11,11 +11,11 @@ async function getRows(db, tb, key) {
 async function sidebarDropDownClicked(e, key, name) {
     let el = e.target
     if (el.classList.contains('active')) {
-        el.classList.remove('text-green', 'active')
+        el.classList.remove('active')
         el.innerText = "+"
         ById(`tables_${key}`).style.display = 'none'
     } else {
-        el.classList.add('text-green', 'active')
+        el.classList.add('active')
         el.innerText = "-"
         ById(`tables_${key}`).style.display = 'flex'
         let p = ById(`tables_${key}`)
@@ -27,7 +27,7 @@ async function sidebarDropDownClicked(e, key, name) {
         for (let i = 0; i < data.length; i++) {
             let d = createNode('div')
             d.id = key + "_" + i
-            d.classList.add("side_tables")
+            d.classList.add('ms-2', 'cursor-pointer', 'mt-1', 'p-2', 'border', 'border-slate-300', 'rounded-md', 'bg-slate-200', 'text-slate-800')
             let tab = data[i][`Tables_in_${name}`]
             d.innerText = tab
             d.addEventListener('click', () => getRows(name, tab, key))

@@ -266,5 +266,6 @@
     </main>
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/db.js') }}"></script>
+    <script src="{{ asset('js/table.js') }}"></script>
 </body>
 </html>

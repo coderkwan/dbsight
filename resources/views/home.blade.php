@@ -265,5 +265,6 @@
         {{-- end for copy sake --}}
     </main>
     <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/db.js') }}"></script>
 </body>
 </html>

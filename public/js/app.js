@@ -1,3 +1,14 @@
+/**
+This Module hadles events and call the neccessary functions.
+ **/
+
+//Utils
+function ById(id) {
+    return document.getElementById(id)
+}
+function createNode(tag) {
+    return document.createElement(tag)
+}
 
 let prev_table = '';
 let token = document.querySelector('input[name="_token"]').getAttribute('value')
@@ -6,34 +17,6 @@ async function getRows(db, tb, key) {
     const d = await fetch(`/data?db=${db}&table=${tb}`, {method: 'get'})
     const res = await d.json()
     renderRowsTable(res.data, res.columns, db, tb, key, res.columns_full)
-}
-
-async function sidebarDropDownClicked(e, key, name) {
-    let el = e.target
-    if (el.classList.contains('active')) {
-        el.classList.remove('active')
-        el.innerText = "+"
-        ById(`tables_${key}`).style.display = 'none'
-    } else {
-        el.classList.add('active')
-        el.innerText = "-"
-        ById(`tables_${key}`).style.display = 'flex'
-        let p = ById(`tables_${key}`)
-
-        let dd = await fetch(`/data/tables?database=${name}`, {method: "get"})
-        let data = await dd.json()
-        p.innerHTML = ''
-
-        for (let i = 0; i < data.length; i++) {
-            let d = createNode('div')
-            d.id = key + "_" + i
-            d.classList.add('ms-2', 'cursor-pointer', 'mt-1', 'p-2', 'border', 'border-slate-300', 'rounded-md', 'bg-slate-200', 'text-slate-800')
-            let tab = data[i][`Tables_in_${name}`]
-            d.innerText = tab
-            d.addEventListener('click', () => getRows(name, tab, key))
-            p.append(d)
-        }
-    }
 }
 
 async function getTables(e, name, key) {
@@ -797,79 +780,6 @@ close_edit_table_modal.addEventListener('click', (e) => {
 })
 
 
-async function getDbsApi() {
-    let d = await fetch('/home', {method: 'get'})
-    const res = await d.json()
-
-    ById('create_database_form').style.display = "flex"
-
-    //render dbs
-    let displayer = ById('display')
-    displayer.innerHTML = ''
-    let container = createNode('div')
-    container.classList.add('flex', 'flex-wrap', 'gap-3')
-
-    // sidebar
-    let sb = ById('sidebar')
-    sb.innerHTML = ''
-    let hh = createNode('h3')
-    hh.innerText = 'Databases'
-    hh.classList.add('uppercase', 'font-bold', 'text-2xl', 'mb-3', 'text-slate-700')
-    displayer.append(hh)
-
-    res.forEach((item, i) => {
-        let element = createNode('div')
-        element.classList.add('p-7', 'bg-white', 'border', 'border-slate-300', 'rounded-lg', 'min-w-[300px]', 'cursor-pointer')
-
-        let pb = createNode('h4')
-        pb.innerText = item['Database']
-        let pa = createNode('p')
-        pa.innerText = "Tables: " + item['table_count']
-        pb.classList.add('font-bold')
-        pa.classList.add('text-xs', 'uppercase', 'text-blue-600')
-
-        element.append(pb)
-        element.append(pa)
-        element.addEventListener('click', (e) => getTables(e, item['Database'], i))
-
-        container.append(element)
-
-        // sidebar
-        let sb_container = createNode('div')
-        sb_container.classList.add('side_container')
-        let sb_wrap = createNode('div')
-        sb_wrap.classList.add('side_wrapper')
-
-        let sb_drop = createNode('div')
-        sb_drop.classList.add('border', 'border-slate-400', 'rounded-lg', 'cursor-pointer', 'bg-white', 'px-3', 'py-2')
-        sb_drop.innerText = '+'
-
-        let sb_p = createNode('p')
-        sb_p.classList.add('db_listed', 'border', 'border-slate-400', 'rounded-lg', 'py-2', 'ps-4', 'w-full', 'bg-white', 'cursor-pointer')
-        sb_p.id = "db_" + i
-        sb_p.innerText = item['Database']
-        sb_p.addEventListener('click', (e) => getTables(e, item['Database'], i))
-
-        let sb_kids = createNode('div')
-        sb_kids.classList.add('table_listed')
-        sb_kids.id = 'tables_' + i
-
-        sb_wrap.append(sb_drop)
-        sb_wrap.append(sb_p)
-        sb_container.append(sb_wrap)
-        sb_container.append(sb_kids)
-        sb.append(sb_container)
-
-        sb_drop.addEventListener('click', (e) => {
-            sidebarDropDownClicked(e, i, item['Database'])
-        })
-
-    })
-    displayer.append(container)
-}
-
-
-
 ById('save_table_name').addEventListener('click', async (e) => {
     e.preventDefault()
     let dd = new FormData()
@@ -900,10 +810,3 @@ ById('save_table_name').addEventListener('click', async (e) => {
     }
 })
 
-//Utils
-function ById(id) {
-    return document.getElementById(id)
-}
-function createNode(tag) {
-    return document.createElement(tag)
-}

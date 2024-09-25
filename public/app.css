@@ -178,7 +178,19 @@ button {
     right: 0;
     margin: 0 auto;
     background-color: white;
-    box-shadow: 1px 1px 92px 23px #9e9fad;
+    /* box-shadow: 1px 1px 92px 23px #9e9fad; */
+}
+
+#edit_table_modal_container {
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    background-color: rgba(242, 242, 242, 0.62);
 }
 
 #create_table_modal input,
@@ -193,8 +205,4 @@ button {
 
 .each_column label {
     font-size: 10px;
-}
-
-.each_column button {
-    background-color: tomato;
 }

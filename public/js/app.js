@@ -249,7 +249,7 @@ add_col.addEventListener('click', h => {
     new_mode.style.display = 'flex'
 
     let bt = createNode('button')
-    bt.style.backgroundColor = 'green'
+    bt.classList.add('p-2', 'cursor-pointer', 'rounded-lg', 'bg-green-300', 'text-slate-800')
     bt.innerText = 'Save'
     bt.type = 'button'
 
@@ -300,7 +300,7 @@ add_col.addEventListener('click', h => {
     })
 
     let btt = createNode('button')
-    btt.classList.add('bg-red-500')
+    btt.classList.add('p-2', 'cursor-pointer', 'rounded-lg', 'bg-red-300', 'text-slate-800')
     btt.innerText = 'Delete'
     btt.type = 'button'
 
@@ -374,6 +374,7 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
 
     edit_table_btn.addEventListener('click', e => {
         edit_tab.style.display = 'flex'
+        ById('edit_table_modal_container').style.display = 'flex'
 
         edit_tab.querySelector('input[name="name"]').value = tb
         edit_tab.querySelector('input[name="old_name"]').value = tb
@@ -399,8 +400,7 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
 
             let saver = createNode('button')
             saver.type = 'button'
-            saver.classList.add('border', 'p-2', 'cursor-pointer')
-            saver.style.backgroundColor = 'green'
+            saver.classList.add('p-2', 'cursor-pointer', 'rounded-lg', 'bg-green-300', 'text-slate-800')
             saver.innerText = 'Save'
 
             saver.addEventListener('click', async (e) => {
@@ -443,7 +443,7 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
             })
 
             let deleter = createNode('button')
-            deleter.classList.add('p-3', 'rounded-lg', 'bg-rose-100', 'text-slate-700', 'uppercase', 'border', 'border-slate-300')
+            deleter.classList.add('p-2', 'cursor-pointer', 'rounded-lg', 'bg-rose-300', 'text-slate-800')
             deleter.type = 'button'
             deleter.innerText = 'Delete'
 
@@ -768,6 +768,7 @@ close_table_modal.addEventListener('click', (e) => {
 let close_edit_table_modal = ById('close_edit_table_modal')
 close_edit_table_modal.addEventListener('click', (e) => {
     e.target.parentNode.parentNode.style.display = 'none'
+    ById('edit_table_modal_container').style.display = 'none'
     // ById('edit_table_error').style.display = 'none'
     ById('edit_table_modal').removeEventListener('submit', () => {return })
     ById('all_edit_columns').innerHTML = ''
@@ -827,7 +828,7 @@ async function getDbsApi() {
         sb_drop.innerText = '+'
 
         let sb_p = createNode('p')
-        sb_p.classList.add('db_listed','border', 'border-slate-400', 'rounded-lg', 'py-2', 'ps-4', 'w-full', 'bg-white', 'cursor-pointer')
+        sb_p.classList.add('db_listed', 'border', 'border-slate-400', 'rounded-lg', 'py-2', 'ps-4', 'w-full', 'bg-white', 'cursor-pointer')
         sb_p.id = "db_" + i
         sb_p.innerText = item['Database']
         sb_p.addEventListener('click', (e) => getTables(e, item['Database'], i))
@@ -871,6 +872,7 @@ ById('save_table_name').addEventListener('click', async (e) => {
 
             ById('edit_table_error').style.display = "none"
             ById('edit_table_modal').style.display = "none"
+            ById('edit_table_modal_container').style.display = "none"
             getRows(ById('edit_table_db').value, ById('edit_table_table').value, ById('edit_table_modal_key').value)
         }
             , 1000)

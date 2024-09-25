@@ -11,7 +11,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="app.css">
 </head>
-<body class="m-4">
+<body class="m-4" id="body">
     <main class="flex gap-4">
         <nav id="sidebar"
             class="rounded-xl max-w-[20%] w-full border border-slate-300 bg-gray-100 p-7 overflow-scroll h-[97vh]">
@@ -175,40 +175,44 @@
                         <p class="text-rose-500 font-xs">{{ $error }}</p>
                     @endforeach
                 </form>
-                <form id="edit_table_modal">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-md font-bold" id="create_table_title">Edit Table</h3>
-                        <button type="button" id="close_edit_table_modal"
-                            class="bg-red-500 w-fit -full pointer">X</button>
-                    </div>
-                    <p id="edit_table_error" class="text-red-500 hidden"></p>
-                    <input type="text" name="db" id="edit_table_db" required value="{{ old('db') }}"
-                        placeholder="table db" hidden>
-                    <input type="text" id="edit_table_old_table" name="old_name" required hidden
-                        value="{{ old('old_name') }}" placeholder="table name" class="p-2 border">
-                    <div class="flex gap-3">
-                        <input type="text" name="name" id="edit_table_table"required
-                            value="{{ old('name') }}" placeholder="table name" class="p-2 border">
-                        <button type="button" id="save_table_name" class="w-[40%] bg-green-300 text-slate-800">Save
-                            name</button>
-                    </div>
-                    <h3 class="text-xl">Columns</h3>
-                    <div class="flex gap-5 flex-col" id="all_edit_columns">
-                    </div>
-                    <button type="button" id="add_column_on_edit">Add column +</button>
-                    @foreach ($errors->all() as $error)
-                        <p class="text-rose-500 font-xs">{{ $error }}</p>
-                    @endforeach
-                </form>
+                <div id="edit_table_modal_container" class="">
+                    <form id="edit_table_modal" class="rounded-2xl border border-slate-300 shadow-lg p-5">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-md font-bold" id="create_table_title">Edit Table</h3>
+                            <button type="button" id="close_edit_table_modal"
+                                class="bg-red-400 w-[40px] h-[40px] pointer rounded-full">X</button>
+                        </div>
+                        <p id="edit_table_error" class="text-red-500 hidden"></p>
+                        <input type="text" name="db" id="edit_table_db" required
+                            value="{{ old('db') }}" placeholder="table db" hidden>
+                        <input type="text" id="edit_table_old_table" name="old_name" required hidden
+                            value="{{ old('old_name') }}" placeholder="table name" class="p-2 border">
+                        <div class="flex gap-3">
+                            <input type="text" name="name" id="edit_table_table"required
+                                value="{{ old('name') }}" placeholder="table name" class="p-2 border rounded-lg">
+                            <button type="button" id="save_table_name"
+                                class="w-[40%] bg-green-300 rounded-lg text-slate-800">Save
+                                name</button>
+                        </div>
+                        <h3 class="text-xl">Columns</h3>
+                        <div class="flex gap-5 flex-col" id="all_edit_columns">
+                        </div>
+                        <button type="button" id="add_column_on_edit" class="rounded-lg p-2">Add column +</button>
+                        @foreach ($errors->all() as $error)
+                            <p class="text-rose-500 font-xs">{{ $error }}</p>
+                        @endforeach
+                    </form>
+                </div>
             </div>
             <div id="rename_databese" class="hidden flex-col p-3">
-                <button id="close_rename_modal" class="bg-red-400 w-fit p-2 self-end text-white">X</button>
+                <button id="close_rename_modal"
+                    class="bg-red-400 w-[40px] h-[40px] p-2 self-end text-white rounded-full">X</button>
                 <p id="rename_error" class="my-2 text-rose-300 hidden"></p>
                 <form method="post" id="rename_databese_form" class="w-full">
                     <label>Database Name</label>
-                    <input class='p-2 border' name="name" required />
+                    <input class='p-2 border rounded-lg' name="name" required />
                     <input class='p-2 border' name="old_name" class="hidden" style="display: none;" />
-                    <button type="submit">Update</button>
+                    <button type="submit" class="rounded-lg p-2 bg-green-300 text-slate-800">Update</button>
                 </form>
             </div>
         </div>
@@ -217,43 +221,45 @@
         <div class="hidden gap-5 items-end each_column" id="edit_each_column">
             <div class="flex flex-col">
                 <label for="">Name</label>
-                <input type="text" name="column[]" required placeholder="Column name" class="p-1 border">
+                <input type="text" name="column[]" required placeholder="Column name"
+                    class="p-2 border border-slate-300 rounded-lg">
             </div>
             <div class="flex flex-col">
                 <label for="">Type</label>
-                <input name="type[]" placeholder="varchar(255)" type="text" class="p-1 border">
+                <input name="type[]" placeholder="varchar(255)" type="text"
+                    class="p-2 border border-slate-300 rounded-lg">
             </div>
             <div class="flex flex-col">
                 <label>Primary</label>
-                <select name="PRIMARY[]" class="p-1">
+                <select name="PRIMARY[]" class="p-2 border border-slate-300 rounded-lg">
                     <option value="">NO</option>
                     <option value="PRIMARY KEY">YES</option>
                 </select>
             </div>
             <div class="flex flex-col">
                 <label>NULL</label>
-                <select name="NULL[]" class="p-1">
+                <select name="NULL[]" class="p-2 border border-slate-300 rounded-lg">
                     <option value="NOT NULL">No</option>
                     <option value="">Yes</option>
                 </select>
             </div>
             <div class="flex flex-col">
                 <label>Unique</label>
-                <select name="UNIQUE[]" class="p-1">
+                <select name="UNIQUE[]" class="p-2 border border-slate-300 rounded-lg">
                     <option value="">No</option>
                     <option value="UNIQUE">Yes</option>
                 </select>
             </div>
             <div class="flex flex-col">
                 <label>AI</label>
-                <select name="AI[]" class="p-1">
+                <select name="AI[]" class="p-2 border border-slate-300 rounded-lg">
                     <option value="">No</option>
                     <option value="AUTO_INCREMENT">Yes</option>
                 </select>
             </div>
             <div class="flex flex-col">
                 <label>Default</label>
-                <input name="DEFAULT[]" type="text" class="p-1 border" />
+                <input name="DEFAULT[]" type="text" class="p-2 border border-slate-300 rounded-lg" />
             </div>
         </div>
         {{-- end for copy sake --}}

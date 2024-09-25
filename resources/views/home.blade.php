@@ -18,7 +18,7 @@
             @if (count($dbs) > 0)
                 @foreach ($dbs as $key => $item)
                     <div class="side_container">
-                        <div class="side_wrapper ">
+                        <div class="side_wrapper">
                             <div onclick="sidebarDropDownClicked(event, {{ $key }}, {{ json_encode($item['Database']) }})"
                                 class="cursor-pointer border border-slate-400 rounded-lg py-2 px-3 bg-white">
                                 +</div>
@@ -59,7 +59,7 @@
                     @csrf
                     <div class="flex gap-2 items-center w-full">
                         <input type="text" name="name" value="{{ old('name') }}" placeholder="database name"
-                            class="border border-slate-200 rounded-lg text-slate-100 p-3 bg-white">
+                            class="border border-slate-200 rounded-lg text-slate-700 p-3 bg-white">
                         <button type="submit"
                             class="border border-green-300 rounded-lg text-slate-700 p-3 bg-green-300">Create
                             Database</button>
@@ -204,16 +204,20 @@
                     </form>
                 </div>
             </div>
-            <div id="rename_databese" class="hidden flex-col p-3">
-                <button id="close_rename_modal"
-                    class="bg-red-400 w-[40px] h-[40px] p-2 self-end text-white rounded-full">X</button>
-                <p id="rename_error" class="my-2 text-rose-300 hidden"></p>
-                <form method="post" id="rename_databese_form" class="w-full">
-                    <label>Database Name</label>
-                    <input class='p-2 border rounded-lg' name="name" required />
-                    <input class='p-2 border' name="old_name" class="hidden" style="display: none;" />
-                    <button type="submit" class="rounded-lg p-2 bg-green-300 text-slate-800">Update</button>
-                </form>
+            <div id="rename_databese"
+                class="hidden absolute w-screen h-screen top-0 right-0 left-0 mx-auto bg-[rgba(105,105,105,0.53)]">
+                <div
+                    class="flex-col p-3 rounded-2xl border bg-white border-slate-300 absolute mx-auto left-0 right-0 top-5 max-w-[800px]">
+                    <button id="close_rename_modal"
+                        class="bg-red-400 w-[40px] h-[40px] p-2 self-end text-white rounded-full">X</button>
+                    <p id="rename_error" class="my-2 text-rose-300 hidden"></p>
+                    <form method="post" id="rename_databese_form" class="w-full">
+                        <label>Database Name</label>
+                        <input class='p-2 border rounded-lg' name="name" required />
+                        <input class='p-2 border' name="old_name" class="hidden" style="display: none;" />
+                        <button type="submit" class="rounded-lg p-2 bg-green-300 text-slate-800">Update</button>
+                    </form>
+                </div>
             </div>
         </div>
         </div>

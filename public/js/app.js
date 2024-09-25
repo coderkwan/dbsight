@@ -6,6 +6,7 @@ This Module hadles events and call the neccessary functions.
 function ById(id) {
     return document.getElementById(id)
 }
+
 function createNode(tag) {
     return document.createElement(tag)
 }

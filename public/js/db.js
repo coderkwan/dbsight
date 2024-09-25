@@ -2,7 +2,6 @@
 /**
 
 This Module does the following;
-
 1. get dbs
 2. create side bar
 4. create main section
@@ -16,15 +15,15 @@ async function getDbsApi() {
     let d = await fetch('/home', {method: 'get'})
     if (d.status == 200) {
         const dbs = await d.json()
-        createSideBar(dbs)
-        createMainSection(dbs)
+        createSideBarDBs(dbs)
+        createMainSectionDBs(dbs)
     } else {
         return 0
     }
 }
 
 
-function createSideBar(dbs) {
+function createSideBarDBs(dbs) {
     let sb = ById('sidebar')
     sb.innerHTML = ''
 
@@ -61,8 +60,7 @@ function createSideBar(dbs) {
     })
 }
 
-
-function createMainSection(dbs) {
+function createMainSectionDBs(dbs) {
     let displayer = ById('display')
     displayer.innerHTML = ''
 
@@ -178,3 +176,43 @@ function renameDatabase(database) {
         ById('rename_databese').style.display = 'none'
     })
 }
+
+
+function deleteModal(database) {
+    const wrapper = createNode('div')
+    const modal = createNode('div')
+    const modal_cancel = createNode('button')
+    const modal_submit = createNode('button')
+    const modal_text = createNode('p')
+    const text = `Are you sure you want to delete the database <span class='font-bold text-indigo-500'>${database}</span>?`
+
+    wrapper.classList.add('w-screen', 'h-screen', 'absolute', 'top-0', 'right-0', 'left-0', 'mx-auto', 'bg-[rgba(105,105,105,0.53)]')
+    modal.classList.add('bg-white', 'border', 'rounded-2xl', 'border-slate-300', 'p-4', 'absolute', 'top-5', 'max-w-[700px]', 'mx-auto', 'left-0', 'right-0', 'text-center')
+
+    modal_cancel.type = 'button'
+    modal_submit.type = 'button'
+    modal_cancel.innerText = 'Cancel'
+    modal_submit.innerText = 'Delete Database'
+    modal_cancel.classList.add('bg-red-400', 'text-slate-100', 'rounded-lg', 'py-2', 'px-5', 'me-2', 'font-bold')
+    modal_submit.classList.add('bg-green-100', 'border', 'border-slate-400', 'text-slate-600', 'rounded-lg', 'py-2', 'px-5', 'me-2', 'font-bold')
+    modal_text.classList.add('text-lg', 'my-5')
+
+    modal_text.innerHTML = text
+
+    modal.append(modal_text)
+    modal.append(modal_cancel)
+    modal.append(modal_submit)
+    wrapper.append(modal)
+    ById('display').append(wrapper)
+
+    modal_cancel.addEventListener('click', (e) => {
+        wrapper.style.display = 'none'
+    })
+
+    modal_submit.addEventListener('click', (e) => {
+        wrapper.style.display = 'none'
+        deleteDatabase(database)
+    })
+}
+
+

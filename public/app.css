@@ -166,8 +166,7 @@ button {
 
 #create_table_modal,
 #create_row_modal,
-#edit_table_modal,
-#rename_databese {
+#edit_table_modal {
     max-height: 90vh;
     overflow: scroll;
     max-width: 800px;

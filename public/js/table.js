@@ -1,6 +1,5 @@
 
 /**
-
 This Module does the following;
 
 1. get tables
@@ -10,7 +9,6 @@ This Module does the following;
 5. handle create table
 6. handle edit table
 7. hadle delete table
-
  **/
 
 async function getTables(e, name, key) {
@@ -24,6 +22,7 @@ async function getTables(e, name, key) {
         return 0
     }
 }
+
 function colorSideBarDB(key) {
     ById('create_database_form').style.display = "none"
 
@@ -55,7 +54,6 @@ function createHeader(db_name) {
         createTable(db_name)
     })
 
-
     let rename_btn = createNode('button')
     rename_btn.innerText = 'Rename Database'
     rename_btn.type = 'button'
@@ -70,7 +68,7 @@ function createHeader(db_name) {
     delete_db_btn.classList.add('p-3', 'rounded-lg', 'bg-rose-100', 'text-slate-700', 'uppercase', 'border', 'border-slate-300')
     delete_db_btn.addEventListener('click', async e => {
         e.preventDefault()
-        deleteDatabase(db_name)
+        deleteModal(db_name)
     })
 
     let h_btn_cont = createNode('div')
@@ -83,6 +81,7 @@ function createHeader(db_name) {
 }
 
 function createMainSection(data, db_name) {
+    let displayer = ById('display')
     if (data.length < 1) {
         let error = createNode('p')
         let text = "The Database " + db_name + " Has No Tables"
@@ -109,13 +108,11 @@ function createMainSection(data, db_name) {
             btn_cont.append(view_btn)
             btn_cont.append(del_btn)
 
-
             view_btn.addEventListener('click', async () => {
                 const d = await fetch(`/data?db=${db_name}&table=${Object.values(data[i])[0]}`, {method: 'get'})
                 const res = await d.json()
                 renderRowsTable(res.data, res.columns, db_name, Object.values(data[i])[0], key, res.columns_full)
             })
-
 
             let da = new FormData()
             da.append('table', Object.values(data[i])[0])
@@ -162,7 +159,6 @@ function createMainSection(data, db_name) {
     }
 }
 
-
 function createTable(database) {
     ById('create_table_modal').style.display = 'flex'
     ById('create_table_db').value = database
@@ -182,7 +178,6 @@ function createTable(database) {
         }
     })
 }
-
 
 async function deleleTable(database, table) {
     let data = new FormData()
@@ -219,7 +214,6 @@ function editTable(database, table, key) {
 
     let col_cont = edit_tab.querySelector('#all_edit_columns')
     col_cont.innerHTML = ''
-
 
     edit_tab.querySelector('input[name="name"]').value = table
     edit_tab.querySelector('input[name="old_name"]').value = table
@@ -414,7 +408,6 @@ add_col.addEventListener('click', h => {
             ById('edit_table_error').style.color = "red"
             ById('edit_table_error').style.display = "flex"
         }
-
     })
 
     let btt = createNode('button')
@@ -431,6 +424,7 @@ add_col.addEventListener('click', h => {
         d.target.parentNode.remove()
     })
 })
+
 // add column on create column form
 let add_column_btn = ById('add_column_btn')
 let _column = ById('each_column')
@@ -472,6 +466,7 @@ close_table_modal.addEventListener('click', (e) => {
     ById('create_table_db').removeEventListener('submit', () => {return })
 
 })
+
 // close edit table modal
 let close_edit_table_modal = ById('close_edit_table_modal')
 close_edit_table_modal.addEventListener('click', (e) => {

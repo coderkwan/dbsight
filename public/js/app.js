@@ -346,6 +346,7 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
     create_t_btn.type = 'button'
 
     create_t_btn.addEventListener('click', e => {
+        ById('create_row_modal_cont').style.display = 'flex'
         ById('create_row_modal').style.display = 'flex'
     })
 
@@ -552,8 +553,12 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
         td_edit.append(edit_btn)
 
         td_edit.addEventListener('click', e => {
-            let editor = renderForm(colu, tb, 'Edit')
-            displayer.append(editor)
+            let ff = renderForm(colu, tb, 'Edit')
+            let editor = ff[0]
+            let editor_cont = ff[1]
+            displayer.append(editor_cont)
+
+            editor_cont.style.display = 'flex'
             editor.style.display = 'flex'
 
             for (let y in data[i]) {
@@ -638,8 +643,12 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
     table_cont.append(table)
     displayer.append(table_cont)
 
-    let foorm = renderForm(colu, tb, 'Create')
-    displayer.append(foorm)
+    let foorm = renderForm(colu, tb, 'Create')[0]
+    let foorm_cont = renderForm(colu, tb, 'Create')[1]
+    foorm_cont.append(foorm)
+    console.log(foorm)
+
+    displayer.append(foorm_cont)
 
     foorm.addEventListener('submit', async (e) => {
         e.preventDefault()
@@ -674,16 +683,21 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
 
 // render create row form
 function renderForm(colu, tb, what_for) {
+    let form_cont = createNode('div')
+    form_cont.classList.add('w-screen', 'h-screen', 'bg-[rgba(242,242,242,0.62)]', 'absolute', 'top-0', 'right-0', 'left-0', 'mx-auto')
+    form_cont.style.display = 'none'
+    form_cont.id = 'create_row_modal_cont'
+
     let form = createNode('form')
     form.id = 'create_row_modal'
-    form.style.display = 'none'
+    form.classList.add('rounded-2xl', 'border', 'border-slate-300')
 
     let x = createNode('button')
     let xp = createNode('h4')
     xp.innerText = what_for + ' row in the ' + tb + ' table'
     xp.classList.add('font-bold')
     x.innerText = 'X'
-    x.classList.add('bg-red-500', 'p-3', 'w-fit', 'rounded', 'align-self-end')
+    x.classList.add('bg-red-400', 'p-2', 'w-[40px]', 'h-[40px]', 'rounded-full', 'align-self-end')
     x.type = 'button'
     x.id = 'close_row_modal'
     let er = createNode('p')
@@ -691,6 +705,7 @@ function renderForm(colu, tb, what_for) {
     er.id = 'create_row_error'
     er.style.color = 'tomato'
     x.addEventListener('click', (e) => {
+        form_cont.style.display = 'none'
         form.style.display = 'none'
         er.style.display = 'none'
     })
@@ -707,7 +722,7 @@ function renderForm(colu, tb, what_for) {
         label.innerText = i + " - " + colu[i]
         let input = createNode("input")
         input.type = 'text'
-        input.classList.add('p-2', 'border', 'text-sm')
+        input.classList.add('p-2', 'border', 'border', 'border-slate-300', 'text-sm', 'rounded-lg')
         input.name = i
         d.append(label)
         d.append(input)
@@ -716,10 +731,12 @@ function renderForm(colu, tb, what_for) {
 
     let button = createNode('button')
     button.type = 'submit'
+    button.classList.add('bg-green-300', 'text-slate-800', 'rounded-lg')
     button.innerText = what_for
     form.append(button)
+    form_cont.append(form)
 
-    return form
+    return [form, form_cont]
 }
 
 // add column on create column form
@@ -869,7 +886,6 @@ ById('save_table_name').addEventListener('click', async (e) => {
         ById('edit_table_error').style.display = "flex"
 
         setTimeout(() => {
-
             ById('edit_table_error').style.display = "none"
             ById('edit_table_modal').style.display = "none"
             ById('edit_table_modal_container').style.display = "none"

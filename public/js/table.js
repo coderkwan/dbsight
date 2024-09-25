@@ -17,7 +17,7 @@ async function getTables(e, name, key) {
         let tables = await res.json()
         colorSideBarDB(key)
         createHeader(name)
-        createMainSection(tables, name)
+        createMainSection(tables, name, key)
     } else {
         return 0
     }
@@ -80,7 +80,7 @@ function createHeader(db_name) {
     displayer.append(divs)
 }
 
-function createMainSection(data, db_name) {
+function createMainSection(data, db_name, key) {
     let displayer = ById('display')
     if (data.length < 1) {
         let error = createNode('p')
@@ -109,9 +109,7 @@ function createMainSection(data, db_name) {
             btn_cont.append(del_btn)
 
             view_btn.addEventListener('click', async () => {
-                const d = await fetch(`/data?db=${db_name}&table=${Object.values(data[i])[0]}`, {method: 'get'})
-                const res = await d.json()
-                renderRowsTable(res.data, res.columns, db_name, Object.values(data[i])[0], key, res.columns_full)
+                getRows(db_name, Object.values(data[i])[0], key)
             })
 
             let da = new FormData()

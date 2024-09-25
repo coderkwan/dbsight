@@ -17,15 +17,15 @@ async function getRows(db, tb, key) {
     const res = await fetch(`/data?db=${db}&table=${tb}`, {method: 'get'})
     if (res.status == 200) {
         const data = await res.json()
-        colorSideBarDB(key)
-        createHeader(db)
+        colorSideBarDBrows(key)
+        createHeaderRows(db, tb)
         renderRowsTable(data.data, data.columns, db, tb, key, data.columns_full)
     } else {
         return 0
     }
 }
 
-function colorSideBarDB(key) {
+function colorSideBarDBrows(key) {
     ById('create_database_form').style.display = "none"
     let listed_dbs = document.getElementsByClassName('db_listed')
 
@@ -37,7 +37,7 @@ function colorSideBarDB(key) {
     db_clicked.style.backgroundColor = "#bbf7d0"
 }
 
-function createHeader(database, table, key) {
+function createHeaderRows(database, table, key) {
     let displayer = ById('display')
     displayer.innerHTML = ''
 
@@ -87,8 +87,10 @@ function createHeader(database, table, key) {
 }
 
 function renderRowsTable(data, colu, db, tb, key, columns_full) {
+    let displayer = ById('display')
     if (data.length == 0) {
         let error = createNode('p')
+        error.classList.add('p-3', 'rounded-full', 'bg-orange-200', 'text-center', 'text-slate-800', 'mt-3', 'border', 'border-slate-400')
         error.innerText = 'There are no rows in this table'
         displayer.append(error)
     } else {

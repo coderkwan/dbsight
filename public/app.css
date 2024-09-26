@@ -164,7 +164,6 @@ button {
     overflow: hidden;
 }
 
-#create_table_modal,
 #create_row_modal,
 #edit_table_modal {
     max-height: 90vh;

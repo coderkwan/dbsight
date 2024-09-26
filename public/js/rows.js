@@ -18,7 +18,7 @@ async function getRows(db, tb, key) {
     if (res.status == 200) {
         const data = await res.json()
         colorSideBarDBrows(key)
-        createHeaderRows(db, tb)
+        createHeaderRows(db, tb, key, data.columns_full, data.columns)
         renderRowsTable(data.data, data.columns, db, tb, key, data.columns_full)
     } else {
         return 0
@@ -37,7 +37,7 @@ function colorSideBarDBrows(key) {
     db_clicked.style.backgroundColor = "#bbf7d0"
 }
 
-function createHeaderRows(database, table, key) {
+function createHeaderRows(database, table, key, columns_full, colu) {
     let displayer = ById('display')
     displayer.innerHTML = ''
 
@@ -58,8 +58,12 @@ function createHeaderRows(database, table, key) {
     create_t_btn.type = 'button'
 
     create_t_btn.addEventListener('click', e => {
-        ById('create_row_modal_cont').style.display = 'flex'
-        ById('create_row_modal').style.display = 'flex'
+        let form = renderForm(colu, table, 'Create')[0]
+        let form_cont = renderForm(colu, table, 'Create')[1]
+        form.style.display = 'flex'
+        form_cont.style.display = 'flex'
+        form_cont.append(form)
+        displayer.append(form_cont)
     })
 
     btns_cont.append(create_t_btn)
@@ -69,7 +73,7 @@ function createHeaderRows(database, table, key) {
     edit_table_btn.classList.add('p-3', 'rounded-lg', 'bg-orange-100', 'text-slate-700', 'uppercase', 'border', 'border-slate-300')
     edit_table_btn.type = 'button'
     edit_table_btn.addEventListener('click', e => {
-        editTable(database, table, key)
+        editTable(database, table, key, columns_full)
     })
     btns_cont.append(edit_table_btn)
 
@@ -78,7 +82,7 @@ function createHeaderRows(database, table, key) {
     delete_db_btn.type = 'button'
     delete_db_btn.classList.add('p-3', 'rounded-lg', 'bg-rose-100', 'text-slate-700', 'uppercase', 'border', 'border-slate-300')
     delete_db_btn.addEventListener('click', async e => {
-        deleleTable(database, table)
+        deleteTableModal(table, database, key)
     })
     btns_cont.append(delete_db_btn)
 
@@ -90,7 +94,7 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
     let displayer = ById('display')
     if (data.length == 0) {
         let error = createNode('p')
-        error.classList.add('p-3', 'rounded-full', 'bg-orange-200', 'text-center', 'text-slate-800', 'mt-3', 'border', 'border-slate-400')
+        error.classList.add('p-2', 'rounded-full', 'text-xs', 'bg-orange-100', 'text-center', 'text-slate-800', 'mt-3', 'border', 'border-slate-400')
         error.innerText = 'There are no rows in this table'
         displayer.append(error)
     } else {

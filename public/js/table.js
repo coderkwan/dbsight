@@ -16,7 +16,7 @@ async function getTables(e, name, key) {
     if (res.status == 200) {
         let tables = await res.json()
         colorSideBarDB(key)
-        createHeader(name)
+        createHeader(name, key)
         createMainSection(tables, name, key)
     } else {
         return 0
@@ -34,7 +34,7 @@ function colorSideBarDB(key) {
     ById('db_' + key).style.backgroundColor = "#bbf7d0"
 }
 
-function createHeader(db_name) {
+function createHeader(db_name, key) {
     let displayer = ById('display')
     displayer.innerHTML = ''
 
@@ -51,7 +51,7 @@ function createHeader(db_name) {
     create_t_btn.type = 'button'
     create_t_btn.classList.add('p-3', 'rounded-lg', 'bg-green-200', 'border', 'border-slate-400', 'text-slate-700', 'uppercase')
     create_t_btn.addEventListener('click', e => {
-        createTable(db_name)
+        createTable(db_name, key)
     })
 
     let rename_btn = createNode('button')
@@ -86,7 +86,7 @@ function createMainSection(data, db_name, key) {
         let error = createNode('p')
         let text = "The Database " + db_name + " Has No Tables"
         error.innerText = text
-        error.classList.add('text-xl', 'my-4', 'text-orange-500')
+        error.classList.add('text-xs', 'my-4', 'bg-orange-100', 'p-2', 'rounded-full', 'border', 'border-slate-300', 'text-center')
         displayer.append(error)
     } else {
         let tables_cont = createNode('div')
@@ -112,28 +112,8 @@ function createMainSection(data, db_name, key) {
                 getRows(db_name, Object.values(data[i])[0], key)
             })
 
-            let da = new FormData()
-            da.append('table', Object.values(data[i])[0])
-            da.append('database', db_name)
-
             del_btn.addEventListener('click', async (e) => {
-                let dt = await fetch('/delete/table', {
-                    method: "POST", body: da,
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    },
-                })
-                if (dt.status == 200) {
-                    getTables(e, db_name, key)
-                } else {
-                    let gb = ById('global_error')
-                    gb.style.display = 'flex'
-                    gb.innerText = await dt.json()
-                    setTimeout(() => {
-                        gb.style.display = 'none'
-                        gb.innerText = ''
-                    }, 5000)
-                }
+                deleteTableModal(Object.values(data[i])[0], db_name, key)
             })
 
             for (let b in data[i]) {
@@ -157,7 +137,8 @@ function createMainSection(data, db_name, key) {
     }
 }
 
-function createTable(database) {
+function createTable(database, key) {
+    ById('create_table_modal_wrapper').style.display = 'flex'
     ById('create_table_modal').style.display = 'flex'
     ById('create_table_db').value = database
     ById('create_table_title').innerText = 'Create a new table in the ' + database + " database"
@@ -167,7 +148,7 @@ function createTable(database) {
         let data = new FormData(e.target)
         let res = await fetch('/create/table', {method: "POST", headers: {'X-CSRF-TOKEN': token}, body: data})
         if (res.status == 200) {
-            ById('create_table_modal').style.display = 'none'
+            ById('create_table_modal_wrapper').style.display = 'none'
             ById('create_table_error').style.display = 'none'
             getTables(e, e.target.db.value, key)
         } else {
@@ -177,7 +158,7 @@ function createTable(database) {
     })
 }
 
-async function deleleTable(database, table) {
+async function deleleTable(database, table, e, key) {
     let data = new FormData()
     data.append('database', database)
     data.append('table', table)
@@ -198,7 +179,7 @@ async function deleleTable(database, table) {
 }
 
 
-function editTable(database, table, key) {
+function editTable(database, table, key, columns_full) {
     ById('edit_table_modal_container').style.display = 'flex'
     let edit_tab = ById('edit_table_modal')
     edit_tab.style.display = 'flex'
@@ -436,7 +417,7 @@ add_column_btn.addEventListener('click', (e) => {
     let deleter = createNode('button')
     deleter.innerHTML = 'delete'
     deleter.type = 'button'
-    deleter.classList.add('bg-red-300', 'border', 'pointer')
+    deleter.classList.add('bg-red-300', 'border', 'rounded-md', 'text-slate-700')
 
     deleter.addEventListener('click', (e) => {
         copy.remove()
@@ -459,7 +440,7 @@ add_column_btn.addEventListener('click', (e) => {
 // close create table modal
 let close_table_modal = ById('close_table_modal')
 close_table_modal.addEventListener('click', (e) => {
-    e.target.parentNode.parentNode.style.display = 'none'
+    ById('create_table_modal_wrapper').style.display = 'none'
     ById('create_table_error').style.display = 'none'
     ById('create_table_db').removeEventListener('submit', () => {return })
 
@@ -479,3 +460,66 @@ close_edit_table_modal.addEventListener('click', (e) => {
     let key = ById('edit_table_modal_key').value
     getRows(db, tb, key)
 })
+
+
+function deleteTableModal(table, database, key) {
+    const wrapper = createNode('div')
+    const modal = createNode('div')
+    const modal_cancel = createNode('button')
+    const modal_submit = createNode('button')
+    const modal_text = createNode('p')
+    const text = `Are you sure you want to delete the table <span class='font-bold text-indigo-500'>${table}</span>?`
+
+    wrapper.classList.add('w-screen', 'h-screen', 'absolute', 'top-0', 'right-0', 'left-0', 'mx-auto', 'bg-[rgba(105,105,105,0.53)]')
+    modal.classList.add('bg-white', 'border', 'rounded-2xl', 'border-slate-300', 'p-4', 'absolute', 'top-5', 'max-w-[700px]', 'mx-auto', 'left-0', 'right-0', 'text-center')
+
+    modal_cancel.type = 'button'
+    modal_submit.type = 'button'
+    modal_cancel.innerText = 'Cancel'
+    modal_submit.innerText = 'Delete Table'
+    modal_cancel.classList.add('bg-red-400', 'text-slate-100', 'rounded-lg', 'py-2', 'px-5', 'me-2', 'font-bold')
+    modal_submit.classList.add('bg-green-100', 'border', 'border-slate-400', 'text-slate-600', 'rounded-lg', 'py-2', 'px-5', 'me-2', 'font-bold')
+    modal_text.classList.add('text-lg', 'my-5')
+
+    modal_text.innerHTML = text
+
+    modal.append(modal_text)
+    modal.append(modal_cancel)
+    modal.append(modal_submit)
+    wrapper.append(modal)
+    ById('display').append(wrapper)
+
+    modal_cancel.addEventListener('click', (e) => {
+        wrapper.style.display = 'none'
+    })
+
+    modal_submit.addEventListener('click', (e) => {
+        wrapper.style.display = 'none'
+        deleteTable(table, database, key, e)
+    })
+}
+
+async function deleteTable(table, database, key, e) {
+    let da = new FormData()
+    da.append('table', table)
+    da.append('database', database)
+
+    let dt = await fetch('/delete/table', {
+        method: "POST", body: da,
+        headers: {
+            'X-CSRF-TOKEN': token
+        },
+    })
+
+    if (dt.status == 200) {
+        getTables(e, database, key)
+    } else {
+        let gb = ById('global_error')
+        gb.style.display = 'flex'
+        gb.innerText = await dt.json()
+        setTimeout(() => {
+            gb.style.display = 'none'
+            gb.innerText = ''
+        }, 5000)
+    }
+}

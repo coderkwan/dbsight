@@ -38,8 +38,8 @@ function renderForm(colu, tb, what_for) {
     er.id = 'create_row_error'
     er.style.color = 'tomato'
     x.addEventListener('click', (e) => {
-        form_cont.style.display = 'none'
-        form.style.display = 'none'
+        // form.style.display = 'none'
+        ById('create_row_modal_cont').style.display = 'none'
         er.style.display = 'none'
     })
     let xdiv = createNode('div')

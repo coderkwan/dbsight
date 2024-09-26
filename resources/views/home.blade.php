@@ -84,97 +84,104 @@
                 </div>
             </div>
             <div class="">
-                <form id="create_table_modal">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-md font-bold" id="create_table_title">Create New Table</h3>
-                        <button type="button" id="close_table_modal" class="bg-red-500 w-fit -full pointer">X</button>
-                    </div>
-                    <p id="create_table_error" class="text-red-500 hidden"></p>
-                    <input type="text" name="db" id="create_table_db" required value="{{ old('db') }}"
-                        placeholder="table db" hidden>
-                    <input type="text" name="name" required value="{{ old('name') }}" placeholder="table name"
-                        class="p-2 border">
-                    <h3 class="text-xl">Columns</h3>
-                    <div class="flex gap-5 flex-col" id="all_columns">
-                        <div class="flex gap-5 items-end each_column" id="each_column">
-                            <div class="flex flex-col">
-                                <label for="">Name</label>
-                                <input type="text" name="column[]" required value="id" placeholder="Column name"
-                                    class="p-1 border">
-                            </div>
-                            <div class="flex flex-col">
-                                <label for="">Type</label>
-                                <select name="type[]" class="p-1">
-                                    <option value="INT" selected>INT</option>
-                                    <option value="VARCHAR">VARCHAR</option>
-                                    <option value="TEXT">TEXT</option>
-                                    <option value="DATE">DATE</option>
-                                    <option value="DATETIME">DATETIME</option>
-                                    <option value="TIMESTAMP">TIMESTAMP</option>
-                                    <option value="TIME">TIME</option>
-                                    <option value="YEAR">YEAR</option>
-                                    <option value="DECIMAL">DECIMAL</option>
-                                    <option value="FLOAT">FLOAT</option>
-                                    <option value="DOUBLE">DOUBLE</option>
-                                    <option value="BOOLEAN">BOOLEAN</option>
-                                    <option value="CHAR">CHAR</option>
-                                    <option value="BLOB">BLOB</option>
-                                    <option value="ENUM">ENUM</option>
-                                    <option value="SET">SET</option>
-                                    <option value="JSON">JSON</option>
-                                    <option value="BIGINT">BIGINT</option>
-                                    <option value="TINYINT">TINYINT</option>
-                                    <option value="SMALLINT">SMALLINT</option>
-                                    <option value="MEDIUMINT">MEDIUMINT</option>
-                                    <option value="BIT">BIT</option>
-                                    <option value="BINARY">BINARY</option>
-                                    <option value="VARBINARY">VARBINARY</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col">
-                                <label>Size/Values</label>
-                                <input type="text" name="SIZE[]" class="p-1 border" />
-                            </div>
-                            <div class="flex flex-col">
-                                <label>Primary</label>
-                                <select name="PRIMARY[]" class="p-1">
-                                    <option value="">NO</option>
-                                    <option value="PRIMARY KEY" selected>YES</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col">
-                                <label>NULL</label>
-                                <select name="NULL[]" class="p-1">
-                                    <option value="NOT NULL">No</option>
-                                    <option value="">Yes</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col">
-                                <label>Unique</label>
-                                <select name="UNIQUE[]" class="p-1">
-                                    <option value="">No</option>
-                                    <option value="UNIQUE" selected>Yes</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col">
-                                <label>AI</label>
-                                <select name="AI[]" class="p-1">
-                                    <option value="">No</option>
-                                    <option value="AUTO_INCREMENT" selected>Yes</option>
-                                </select>
-                            </div>
-                            <div class="flex flex-col">
-                                <label>Default</label>
-                                <input name="DEFAULT[]" type="text" class="p-1 border" />
+                <div
+                    id="create_table_modal_wrapper"class="hidden w-screen h-screen absolute top-0 left-0 right-0 bg-[rgba(105,105,105,0.3)]">
+                    <form id="create_table_modal"
+                        class="rounded-2xl border border-slate-300 max-w-[800px] absolute top-5 left-0 right-0  mx-auto bg-white">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-md font-bold" id="create_table_title">Create New Table</h3>
+                            <button type="button" id="close_table_modal"
+                                class="bg-red-200 w-[40px] h-[40px] rounded-full text-slate-700 cursor-pointer">X</button>
+                        </div>
+                        <p id="create_table_error" class="text-red-500 hidden"></p>
+                        <input type="text" name="db" id="create_table_db" required value="{{ old('db') }}"
+                            placeholder="table db" hidden class="p-2 rounded-md border-slate-300">
+                        <input type="text" name="name" required value="{{ old('name') }}"
+                            placeholder="table name" class="p-2 rounded-md border border-slate-300">
+                        <h3 class="text-xl">Columns</h3>
+                        <div class="flex gap-5 flex-col" id="all_columns">
+                            <div class="flex gap-5 items-end each_column" id="each_column">
+                                <div class="flex flex-col">
+                                    <label for="">Name</label>
+                                    <input type="text" name="column[]" required value="id"
+                                        placeholder="Column name" class="p-2 rounded-md border border-slate-300">
+                                </div>
+                                <div class="flex flex-col">
+                                    <label for="">Type</label>
+                                    <select name="type[]" class="p-2 rounded-md border border-slate-300">
+                                        <option value="INT" selected>INT</option>
+                                        <option value="VARCHAR">VARCHAR</option>
+                                        <option value="TEXT">TEXT</option>
+                                        <option value="DATE">DATE</option>
+                                        <option value="DATETIME">DATETIME</option>
+                                        <option value="TIMESTAMP">TIMESTAMP</option>
+                                        <option value="TIME">TIME</option>
+                                        <option value="YEAR">YEAR</option>
+                                        <option value="DECIMAL">DECIMAL</option>
+                                        <option value="FLOAT">FLOAT</option>
+                                        <option value="DOUBLE">DOUBLE</option>
+                                        <option value="BOOLEAN">BOOLEAN</option>
+                                        <option value="CHAR">CHAR</option>
+                                        <option value="BLOB">BLOB</option>
+                                        <option value="ENUM">ENUM</option>
+                                        <option value="SET">SET</option>
+                                        <option value="JSON">JSON</option>
+                                        <option value="BIGINT">BIGINT</option>
+                                        <option value="TINYINT">TINYINT</option>
+                                        <option value="SMALLINT">SMALLINT</option>
+                                        <option value="MEDIUMINT">MEDIUMINT</option>
+                                        <option value="BIT">BIT</option>
+                                        <option value="BINARY">BINARY</option>
+                                        <option value="VARBINARY">VARBINARY</option>
+                                    </select>
+                                </div>
+                                <div class="flex flex-col">
+                                    <label>Size/Values</label>
+                                    <input type="text" name="SIZE[]"
+                                        class="p-2 rounded-md border border-slate-300" />
+                                </div>
+                                <div class="flex flex-col">
+                                    <label>Primary</label>
+                                    <select name="PRIMARY[]" class="p-2 rounded-md border border-slate-300">
+                                        <option value="">NO</option>
+                                        <option value="PRIMARY KEY" selected>YES</option>
+                                    </select>
+                                </div>
+                                <div class="flex flex-col">
+                                    <label>NULL</label>
+                                    <select name="NULL[]" class="p-2 rounded-md border border-slate-300">
+                                        <option value="NOT NULL">No</option>
+                                        <option value="">Yes</option>
+                                    </select>
+                                </div>
+                                <div class="flex flex-col">
+                                    <label>Unique</label>
+                                    <select name="UNIQUE[]" class="p-2 rounded-md border border-slate-300">
+                                        <option value="">No</option>
+                                        <option value="UNIQUE" selected>Yes</option>
+                                    </select>
+                                </div>
+                                <div class="flex flex-col">
+                                    <label>AI</label>
+                                    <select name="AI[]" class="p-2 rounded-md border border-slate-300">
+                                        <option value="">No</option>
+                                        <option value="AUTO_INCREMENT" selected>Yes</option>
+                                    </select>
+                                </div>
+                                <div class="flex flex-col">
+                                    <label>Default</label>
+                                    <input name="DEFAULT[]" type="text"
+                                        class="p-2 rounded-md border border-slate-300" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <button type="button" id="add_column_btn">Add column +</button>
-                    <button type="submit" class="bg-green-500">Create Table</button>
-                    @foreach ($errors->all() as $error)
-                        <p class="text-rose-500 font-xs">{{ $error }}</p>
-                    @endforeach
-                </form>
+                        <button type="button" id="add_column_btn" class="rounded-md">Add column +</button>
+                        <button type="submit" class="bg-green-500 rounded-md">Create Table</button>
+                        @foreach ($errors->all() as $error)
+                            <p class="text-rose-500 font-xs">{{ $error }}</p>
+                        @endforeach
+                    </form>
+                </div>
                 <div id="edit_table_modal_container" class="">
                     <form id="edit_table_modal" class="rounded-2xl border border-slate-300 shadow-lg p-5">
                         <div class="flex items-center justify-between">

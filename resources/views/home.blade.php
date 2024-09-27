@@ -38,8 +38,13 @@
             <nav
                 class="bg-gray-100 px-7 py-5 border border-slate-300 rounded-xl uppercase flex gap-5 items-center justify-between mb-4 text-[12px]">
                 <div class="flex gap-5 items-center">
-                    <button class="border border-slate-200 rounded-lg text-slate-700 p-3 bg-white uppercase"
-                        onclick="getDbsApi()">Databases</button>
+                    <button
+                        class="border border-slate-200 rounded-lg text-slate-700 p-3 bg-white uppercase flex gap-2 items-center"
+                        onclick="getDbsApi()">Databases <img src="databasedark.png" alt="databases"
+                            class="w-[20px]"></button>
+                    <button
+                        class="border border-slate-300 rounded-lg text-slate-700 p-3 bg-white uppercase flex gap-2 items-center"
+                        onclick="writeRawSQL()">Raw SQL <img src="raw.png" alt="databases" class="w-[20px]"></button>
                 </div>
                 <div class="flex gap-5 items-center">
                     <a href="/logout"
@@ -68,7 +73,7 @@
                         <p class="text-rose-500 text-sm">{{ $error }}</p>
                     @endforeach
                 </form>
-                <p class="mb-1 text-rose-500 text-sm hidden" id="global_error"></p>
+                <p class="my-3 text-rose-500 hidden" id="global_error"></p>
                 <div id="display" class="">
                     <h3 class="text-slate-700 font-bold text-2xl mb-3 uppercase">Databases</h3>
                     <div class="flex flex-wrap gap-3">
@@ -80,6 +85,28 @@
                                     {{ $item['table_count'] }}</p>
                             </div>
                         @endforeach
+                    </div>
+                </div>
+                <div id="raw_sql" style="display: none;" class="h-full">
+                    <p class="my-3 text-rose-500 hidden" id="sql_error"></p>
+                    <h3 class="flex items-center font-bold text-xl mt-6 mb-3 text-slate-700">Type your valid
+                        sql below.
+                        <p class="ms-4 text-sm font-normal py-2 px-4 inline bg-fuchsia-200 rounded-full w-fit">
+                            State your
+                            Database in the
+                            quiry.
+                            e.g
+                            SELECT
+                            * FROM database.table;</p>
+                    </h3>
+                    <form id="raw_sql_form" class="m-0 p-0">
+                        <textarea name="sql" cols="10" rows="5"
+                            class="m-0 bg-slate-800 text-slate-100 text-lg p-2 border border-slate-200"></textarea>
+                        <button type="submit" class="rounded-md">Run SQl</button>
+                    </form>
+                    <div id="sql_display"
+                        class="my-3 h-full w-full overflow-scroll p-4 border border-slate-200 rounded-2xl">
+                        <p class="text-xm text-slate-500">YOUR RESULTS WILL APPEAR HERE!</p>
                     </div>
                 </div>
             </div>

@@ -38,12 +38,14 @@ function createHeader(db_name, key) {
     let displayer = ById('display')
     displayer.innerHTML = ''
 
+    ById('raw_sql').style.display = 'none'
+
     let divs = createNode('div')
     divs.classList.add('flex', 'justify-between', 'items-center', 'py-6', 'border-b', 'border-slate-200', 'sticky', 'top-0', 'bg-gray-100')
 
     let header = createNode('h2')
-    header.classList.add('text-2xl', 'font-bold')
-    header.innerHTML = `TABLES in the <span class='text-blue-700'>${db_name}</span> Database`
+    header.classList.add('text-2xl', 'font-bold', 'flex', 'items-center', 'gap-1')
+    header.innerHTML = `<img src='database.png' alt='database' class='w-[30px]'/><span class='text-blue-700'>${db_name}</span>`
     divs.append(header)
 
     let create_t_btn = createNode('button')
@@ -138,6 +140,8 @@ function createMainSection(data, db_name, key) {
 }
 
 function createTable(database, key) {
+    ById('raw_sql').style.display = 'none'
+
     ById('create_table_modal_wrapper').style.display = 'flex'
     ById('create_table_modal').style.display = 'flex'
     ById('create_table_db').value = database

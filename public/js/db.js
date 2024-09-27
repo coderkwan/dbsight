@@ -64,6 +64,8 @@ function createMainSectionDBs(dbs) {
     let displayer = ById('display')
     displayer.innerHTML = ''
 
+    ById('raw_sql').style.display = 'none'
+
     ById('create_database_form').style.display = "flex"
 
     let container = createNode('div')

@@ -41,12 +41,14 @@ function createHeaderRows(database, table, key, columns_full, colu) {
     let displayer = ById('display')
     displayer.innerHTML = ''
 
+    ById('raw_sql').style.display = 'none'
+
     let divs = createNode('div')
     divs.classList.add('flex', 'justify-between', 'items-center', 'py-6', 'border-b', 'border-slate-200', 'sticky', 'top-0', 'bg-gray-100')
 
     let header = createNode('h2')
-    header.classList.add('text-2xl', 'font-bold')
-    header.innerHTML = `ROWS in the <span class='text-blue-700'>${table}</span> table`
+    header.classList.add('text-2xl', 'font-bold', 'flex', 'gap-1', 'items-center')
+    header.innerHTML = `<img src='database.png' alt='database' class='w-[30px]'/><span class='text-blue-700'>${database}</span><img src='table.png' alt='table' class='w-[30px]'/>${table}`
     divs.append(header)
 
     let btns_cont = createNode('div')

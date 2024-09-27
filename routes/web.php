@@ -55,6 +55,16 @@ Route::get('/data/tables', function (Request $req) {
     return response()->json($data);
 })->middleware(SetDynamicDbConnection::class);
 
+Route::post('/rawsql', function (Request $req) {
+    $raw = $req->input()['sql'];
+    try {
+        $data = DB::connection('dynamic_db')->select($raw);
+        return response()->json($data);
+    } catch (\Throwable $th) {
+        return response()->json($th->getMessage(), 401);
+    }
+})->middleware(SetDynamicDbConnection::class);
+
 
 Route::get('/data', function (Request $request) {
     $params = $request->query();

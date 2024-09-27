@@ -58,12 +58,37 @@ function createHeaderRows(database, table, key, columns_full, colu) {
     create_t_btn.type = 'button'
 
     create_t_btn.addEventListener('click', e => {
-        let form = renderForm(colu, table, 'Create')[0]
-        let form_cont = renderForm(colu, table, 'Create')[1]
-        form.style.display = 'flex'
-        form_cont.style.display = 'flex'
-        form_cont.append(form)
-        displayer.append(form_cont)
+        let rendered_form = Edit_or_Create_Row_Form(colu, table, 'Create')
+        let foorm = rendered_form[0]
+        let foorm_cont = rendered_form[1]
+        foorm_cont.style.display = 'flex'
+        foorm.style.display = 'flex'
+
+        foorm_cont.append(foorm)
+
+        displayer.append(foorm_cont)
+
+        foorm.addEventListener('submit', async (e) => {
+            e.preventDefault()
+            let da = new FormData(foorm)
+            da.append('x_table_', table)
+            da.append('x_db_', database)
+
+            let dr = await fetch('create/row', {
+                method: "POST", body: da,
+                headers: {
+                    'X-CSRF-TOKEN': token
+                },
+            })
+            if (dr.status == 200) {
+                foorm.style.display = 'none'
+                getRows(database, table, key)
+            } else {
+                let er = ById('create_row_error')
+                er.style.display = 'flex'
+                er.innerText = await dr.json()
+            }
+        })
     })
 
     btns_cont.append(create_t_btn)
@@ -138,32 +163,15 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
             td_edit.append(edit_btn)
 
             td_edit.addEventListener('click', e => {
-                editRow(data[i], colu, tb)
+                editRow(data[i], colu, tb, db, key)
             })
 
             let td_delete = createNode("td")
             let del_btn = createNode('img')
             del_btn.src = 'delete.png'
 
-            let da = new FormData()
-            da.append('table', tb)
-            da.append('db', db)
-            da.append('id', data[i]['id'])
-
             del_btn.addEventListener('click', async (e) => {
-                let de = await fetch('/delete/row', {
-                    method: "POST", body: da,
-                    headers: {
-                        'X-CSRF-TOKEN': token
-                    },
-                })
-                if (de.status == 200) {
-                    getRows(db, tb, key)
-
-                } else {
-                    let des = await de.json()
-                    console.log(des)
-                }
+                deleteRowModal(tb, db, key, data[i]['id'])
             })
 
             td_delete.append(del_btn)
@@ -185,40 +193,12 @@ function renderRowsTable(data, colu, db, tb, key, columns_full) {
         table.append(table_b)
         table_cont.append(table)
         displayer.append(table_cont)
-
-        let foorm = renderForm(colu, tb, 'Create')[0]
-        let foorm_cont = renderForm(colu, tb, 'Create')[1]
-        foorm_cont.append(foorm)
-
-        displayer.append(foorm_cont)
-
-        foorm.addEventListener('submit', async (e) => {
-            e.preventDefault()
-            let da = new FormData(foorm)
-            da.append('x_table_', tb)
-            da.append('x_db_', db)
-
-            let dr = await fetch('create/row', {
-                method: "POST", body: da,
-                headers: {
-                    'X-CSRF-TOKEN': token
-                },
-            })
-            if (dr.status == 200) {
-                foorm.style.display = 'none'
-                getRows(db, tb, key)
-            } else {
-                let er = ById('create_row_error')
-                er.style.display = 'flex'
-                er.innerText = await dr.json()
-            }
-        })
     }
 }
 
 
-function editRow(data, colu, tb) {
-    let ff = renderForm(colu, tb, 'Edit')
+function editRow(data, colu, tb, db, key) {
+    let ff = Edit_or_Create_Row_Form(colu, tb, 'Edit')
     let editor = ff[0]
     let editor_cont = ff[1]
     displayer.append(editor_cont)
@@ -249,6 +229,7 @@ function editRow(data, colu, tb) {
         })
         if (dr.status == 200) {
             editor.style.display = 'none'
+            editor_cont.style.display = 'none'
             getRows(db, tb, key)
         } else {
             let er = editor.querySelector('#create_row_error')
@@ -259,4 +240,122 @@ function editRow(data, colu, tb) {
     })
 }
 
+function Edit_or_Create_Row_Form(colu, tb, what_for) {
+    let form_cont = createNode('div')
+    form_cont.classList.add('w-screen', 'h-screen', 'bg-[rgba(242,242,242,0.62)]', 'absolute', 'top-0', 'right-0', 'left-0', 'mx-auto')
+    form_cont.style.display = 'none'
+    form_cont.id = 'create_row_modal_cont'
+
+    let form = createNode('form')
+    form.id = 'create_row_modal'
+    form.classList.add('rounded-2xl', 'border', 'border-slate-300')
+
+    let x = createNode('button')
+    let xp = createNode('h4')
+    xp.innerText = what_for + ' row in the ' + tb + ' table'
+    xp.classList.add('font-bold')
+    x.innerText = 'X'
+    x.classList.add('bg-red-400', 'p-2', 'w-[40px]', 'h-[40px]', 'rounded-full', 'align-self-end')
+    x.type = 'button'
+    x.id = 'close_row_modal'
+    let er = createNode('p')
+    er.classList.add('hidden')
+    er.id = 'create_row_error'
+    er.style.color = 'tomato'
+    x.addEventListener('click', (e) => {
+        // form.style.display = 'none'
+        ById('create_row_modal_cont').style.display = 'none'
+        er.style.display = 'none'
+    })
+    let xdiv = createNode('div')
+    xdiv.classList.add('flex', 'justify-between', 'items-center')
+    xdiv.append(xp)
+    xdiv.append(x)
+    form.append(xdiv)
+    form.append(er)
+    for (let i in colu) {
+        let d = createNode("div")
+        d.classList.add('each_column')
+        let label = createNode("label")
+        label.innerText = i + " - " + colu[i]
+        let input = createNode("input")
+        input.type = 'text'
+        input.classList.add('p-2', 'border', 'border', 'border-slate-300', 'text-sm', 'rounded-lg')
+        input.name = i
+        d.append(label)
+        d.append(input)
+        form.append(d)
+    }
+
+    let button = createNode('button')
+    button.type = 'submit'
+    button.classList.add('bg-green-300', 'text-slate-800', 'rounded-lg')
+    button.innerText = what_for
+    form.append(button)
+    form_cont.append(form)
+
+    return [form, form_cont]
+}
+
+function deleteRowModal(table, database, key, id) {
+    const wrapper = createNode('div')
+    const modal = createNode('div')
+    const modal_cancel = createNode('button')
+    const modal_submit = createNode('button')
+    const modal_text = createNode('p')
+    const text = `Are you sure you want to delete the row of id <span class='font-bold text-indigo-500'>${id}</span>?`
+
+    wrapper.classList.add('w-screen', 'h-screen', 'absolute', 'top-0', 'right-0', 'left-0', 'mx-auto', 'bg-[rgba(105,105,105,0.53)]')
+    modal.classList.add('bg-white', 'border', 'rounded-2xl', 'border-slate-300', 'p-4', 'absolute', 'top-5', 'max-w-[700px]', 'mx-auto', 'left-0', 'right-0', 'text-center')
+
+    modal_cancel.type = 'button'
+    modal_submit.type = 'button'
+    modal_cancel.innerText = 'Cancel'
+    modal_submit.innerText = 'Delete Row'
+    modal_cancel.classList.add('bg-red-400', 'text-slate-100', 'rounded-lg', 'py-2', 'px-5', 'me-2', 'font-bold')
+    modal_submit.classList.add('bg-green-100', 'border', 'border-slate-400', 'text-slate-600', 'rounded-lg', 'py-2', 'px-5', 'me-2', 'font-bold')
+    modal_text.classList.add('text-lg', 'my-5')
+
+    modal_text.innerHTML = text
+
+    modal.append(modal_text)
+    modal.append(modal_cancel)
+    modal.append(modal_submit)
+    wrapper.append(modal)
+    ById('display').append(wrapper)
+
+    modal_cancel.addEventListener('click', (e) => {
+        wrapper.style.display = 'none'
+    })
+
+    modal_submit.addEventListener('click', (e) => {
+        wrapper.style.display = 'none'
+        deleteRow(table, database, key, id)
+    })
+}
+
+async function deleteRow(tb, db, key, id) {
+    let da = new FormData()
+    da.append('table', tb)
+    da.append('db', db)
+    da.append('id', id)
+
+    let de = await fetch('/delete/row', {
+        method: "POST", body: da,
+        headers: {
+            'X-CSRF-TOKEN': token
+        },
+    })
+    if (de.status == 200) {
+        getRows(db, tb, key)
+    } else {
+        let gb = ById('global_error')
+        gb.style.display = 'flex'
+        gb.innerText = await de.json()
+        setTimeout(() => {
+            gb.style.display = 'none'
+            gb.innerText = ''
+        }, 5000)
+    }
+}
 

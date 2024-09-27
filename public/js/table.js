@@ -84,7 +84,7 @@ function createMainSection(data, db_name, key) {
     let displayer = ById('display')
     if (data.length < 1) {
         let error = createNode('p')
-        let text = "The Database " + db_name + " Has No Tables"
+        let text = "This database has no tables!"
         error.innerText = text
         error.classList.add('text-xs', 'my-4', 'bg-orange-100', 'p-2', 'rounded-full', 'border', 'border-slate-300', 'text-center')
         displayer.append(error)
